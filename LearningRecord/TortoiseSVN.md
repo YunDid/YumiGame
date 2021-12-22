@@ -73,8 +73,3 @@
 ## Brunch / Tag
 
 > Subversion 建立分支与标签的方法, 就只是复制该项目, 使用的方法就类似于硬连接 (hard-link) 所以这些操作只会花费很小, 而且是固定的时间
-
-- - -
-
-# AIAnimation
-
