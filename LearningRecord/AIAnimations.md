@@ -13,8 +13,8 @@
 ## 计划学习路线
 
 - Unity3D基础
+
 - Unity3D动画系统
-- AIAnimations
 
 # Unity3D 编辑器
 
@@ -255,6 +255,64 @@ public class WreckOnCollision : MonoBehaviour
 
 ```
 
+## Event Functions
+
+> `U3D Document : These functions are known as event functions since they are activated by Unity in response to events that occur during gameplay.`
+>
+> 脚本区别于程序，程序会一直持续执行直到其执行完毕，但是脚本不是，脚本依附于其包含的事件函数，当特定的事件发生时，会由相应的事件函数作出响应处理，这是u3d会暂时将控制权转交给相应的脚本，当该事件处理完毕，脚本将马上交还控制权？？？？？？？？？？？？？？？？
+
+### Regular Update Events
+
+> `U3D Document : A key concept in games programming is that of making changes to position, state and behavior of objects in the game just before each frame is rendered.`
+>
+> 游戏类似于动画，需要逐帧渲染，这要求在下一帧渲染前对游戏对象的位置,状态,行为等属性作出改变
+
+#### Update()
+
+> `U3D Document : Update is called before the frame is rendered and also before animations are calculated.`
+>
+> 1. before the frame is rendered. 在下一帧被渲染之前被调用
+> 2. before animations are calculated. 在计算动画之前？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？
+
+#### FixedUpdate()
+
+> `U3D Document : FixedUpdate is called just before each physics update. Since the physics updates and frame updates do not occur with the same frequency, you will get more accurate results from physics code if you place it in the FixedUpdate function rather than Update.`
+>
+> 1. before each physics update. u3d物理系统的更新类似于帧更新，均为离散逐步更新，但是物理帧更新与帧更新的频率不同，FixedUpdate()对物理的更新更准确
+
+#### LateUpdate()
+
+> `U3D Document : LateUpdate function can be used for the situation that to be able to make additional changes at a point after the Update and FixedUpdate functions have been called for all objects in the scene and after all animations have been calculated. `
+>
+> 1. after the Update and FixedUpdate functions have been called. 在Update()和FixedUpdate()被调用之后，作出额外的操作
+> 2. after all animations have been calculated. 在所有动画计算完毕之后作出额外的操作
+>
+> 例如相机需要实时朝向目标对象，但是相机方向的调整必须在目标对象位置作出变动之后update()之后，再进行调整，也就是说相机必须实时朝向目标对象改动后的位置
+
+### Initialization Events
+
+#### Awake()
+
+> `U3D Document : The Awake function is called for each object in the scene at the time when the scene loads`
+>
+> 1. when the scene loads. 在场景加载时，为场景中的每个对象调用Awake()使其能够初始化
+
+#### Start()
+
+> `U3D Document : The Start function is called before the first frame or physics update on an object.`
+>
+> 1. before the first frame or physics update on an object. 在对象执行帧更新or物理更新之前需要被调用进行的初始化
+
+`注意:`
+
+1. `all the Awakes will have finished before the first Start is called.`
+
+   > 所有的Awakes初始化均会在第一个start之前，注意一些重复初始化问题，而且Start可借助Awake完成一些初始化
+
+#### GUI events
+
+> 
+
 ## Order of execution for event functions / 事件的执行顺序
 
 > `U3D Document : Unity orders and repeats event functions over a script’s lifetime.`
@@ -294,6 +352,3 @@ public class WreckOnCollision : MonoBehaviour
 
 - transform
 
-2021/12/23 - 2021/12/24 
-
-- - -
