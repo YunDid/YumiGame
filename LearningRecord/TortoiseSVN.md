@@ -73,3 +73,21 @@
 ## Brunch / Tag
 
 > Subversion 建立分支与标签的方法, 就只是复制该项目, 使用的方法就类似于硬连接 (hard-link) 所以这些操作只会花费很小, 而且是固定的时间
+
+# githubtoken推送代码问题
+
+> 2021.8.13 github更新再支持使用密码push的方式
+
+ 1. 在github中设置一个自己的Personal access tokens
+
+    > Settings -> Developer settings -> Personal access tokens -> Generate new token
+    >
+    > -> 勾选 repo / admin:repo_hook / delete_repo 选项即可 -> Generate
+
+ 2. 在git与远程仓库链接设置别名时将该token复制与https://[你的token]github...即可
+
+ 3. YumiGame Access Token : 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
+
+2021/12/20 - 2021/12/22 
+
+- - -
