@@ -352,3 +352,4 @@ public class WreckOnCollision : MonoBehaviour
 
 - transform
 
+GamePlay框架？？？？？？
