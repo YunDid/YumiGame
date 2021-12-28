@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # AIAnimations
 
 ## 初识问题汇总
@@ -408,7 +409,14 @@ public class WreckOnCollision : MonoBehaviour
 
 > `U3D Document :Unity’s Animation features include retargetable animations, full control of animation weights at runtime, event calling from within the animation playback, sophisticated state machine hierarchies and transitions, blend shapes for facial animations, and much more.`
 
-# Animation Window / 动画视图
+# Animation Workflow / 动画流程
+
+  1. Animation clips are imported from an external source or created within Unity. In this example, they are imported motion captured humanoid animations.
+  2. The animation clips are placed and arranged in an Animator Controller. This shows a view of an Animator Controller in the Animator window. The  States (which may represent animations or nested sub-state machines) appear as nodes connected by lines. This Animator Controller exists as an asset in the Project window.
+  3. The rigged character model (in this case, the astronaut “Astrella”) has a specific configuration of bones which are mapped to Unity’s common Avatar format. This mapping is stored as an Avatar asset as part of the imported character model, and also appears in the Project window as shown.
+  4. When animating the character model, it has an Animator component attached. In the Inspector view shown above, you can see the Animator Component which has both the Animator Controller and the Avatar assigned. The animator uses these together to animate the model. The Avatar reference is only necessary when animating a humanoid character. For other types of animation, only an Animator Controller is required.
+
+# Animation Window / 动画窗口
 
 > `U3D Document : The Animation Window in Unity allows you to create and modify Animation Clips directly inside Unity, the Animation window shows the timeline and keyframes of the Animation for the currently selected GameObject or Animation Clip Asset.`
 >
@@ -416,7 +424,9 @@ public class WreckOnCollision : MonoBehaviour
 >
 > 操作详情略，忘记时文档自寻
 
-## Playback and frame navigation controls / 回放与帧导航控制
+## Windows Interface / 界面布局
+
+### Playback and frame navigation controls / 回放与帧导航控制
 
 - Record Mode for Playback / 录制模式
 
@@ -439,19 +449,24 @@ public class WreckOnCollision : MonoBehaviour
 >
 > 空格 暂停
 
-## The Animated Properties list / 已动画化的属性列表
+### The Animated Properties list / 已动画化的属性列表
 
 > 该列表将显示选定动画化的游戏对象的已动画化的属性，可以添加其余可动画化属性来完成更多动画效果
 
-## The Animation Timeline / 动画时间轴
+### The Animation Timeline / 动画时间轴
 
 > 可以使用该时间轴，在某个时间点设置期望属性值后插入关键帧，完成动画效果
 >
 > 该时间轴的单位为 秒:帧
 
 - Dopesheet timeline mode / 关键帧清单模式
+
+  > 详细操作见文档
+
 - Curves timeline mode / 曲线时间轴模式
-## Rotation Interpolation Types / 旋转插值类型
+
+  > 详细操作见文档
+### Rotation Interpolation Types / 旋转插值类型
 
 - Quaternion Interpolation  / 四元数插值
 
@@ -469,13 +484,6 @@ public class WreckOnCollision : MonoBehaviour
 >
 > 围绕多个轴进行旋转时，可能导致插值瑕疵，如万向锁
 
-# Animation Workflow / 动画流程
-
- 1. Animation clips are imported from an external source or created within Unity. In this example, they are imported motion captured humanoid animations.
- 2. The animation clips are placed and arranged in an Animator Controller. This shows a view of an Animator Controller in the Animator window. The  States (which may represent animations or nested sub-state machines) appear as nodes connected by lines. This Animator Controller exists as an asset in the Project window.
- 3. The rigged character model (in this case, the astronaut “Astrella”) has a specific configuration of bones which are mapped to Unity’s common Avatar format. This mapping is stored as an Avatar asset as part of the imported character model, and also appears in the Project window as shown.
- 4. When animating the character model, it has an Animator component attached. In the Inspector view shown above, you can see the Animator Component which has both the Animator Controller and the Avatar assigned. The animator uses these together to animate the model. The Avatar reference is only necessary when animating a humanoid character. For other types of animation, only an Animator Controller is required.
-
 # Animation Clips / 动画切片
 
 > `U3D Document : Unity’s animation system is based on the concept of Animation Clips, which contain information about how certain objects should change their position, rotation, or other properties over time. Each clip can be thought of as a single linear recording. Unity supports importing animation from external sources, and offers the ability to create animation clips.`
@@ -484,7 +492,7 @@ public class WreckOnCollision : MonoBehaviour
 >
 > u3d中的动画切片可从外部导入也可自行创建
 
-## Animation from External Sources
+## Animation from External Sources / 由外部源导入
 
 > `U3D Document : These External files can contain animation data in the form of a linear recording of the movements of objects within the file.`
 >
@@ -508,7 +516,7 @@ public class WreckOnCollision : MonoBehaviour
 
   > 也可是单个时间轴切割形成的多个动画切片
 
-## Animation Created and Edited Within Unity
+## Animation Created and Edited Within Unity /  由Unity创建并编辑
 
 - The position, rotation and scale of GameObjects
 
@@ -533,6 +541,16 @@ public class WreckOnCollision : MonoBehaviour
 - The timing of calling functions within your own scripts 
 
   > 脚本中函数的调用时机
+
+## Animation Events / 动画事件
+
+> `U3D Document : You can increase the usefulness of Animation clips by using Animation Events, which allow you to call functions in the object’s script at specified points in the timeline.`
+>
+> 可以将动画化对象脚本中的某些函数作为事件添加至动画切片中时间轴中某个时间点上，作为动画事件增加动画切片的用途
+>
+> `注意:`
+>
+> 1. 在时间轴的某个时间点添加事件后，需要将其与对应对象脚本的函数建立绑定，若该函数带有参数，还必须指定参数
 
 # Animation Controller / 状态机
 
@@ -561,41 +579,43 @@ public class WreckOnCollision : MonoBehaviour
 
 **Questions : **
 
-- the object to be animated
+- ~~the object to be animated~~
 
-- the animations
+- ~~the animations~~
 
-- The timing of calling functions within your own scripts
+- ~~The timing of calling functions within your own scripts~~
 
-  > 脚本中函数的调用时机
+  > ~~脚本中函数的调用时机~~
 
-- 动画剪辑的关键帧和曲线
+- ~~动画剪辑的关键帧和曲线~~
+
+- ~~Animation Events 动画事件~~
+
+  > ~~functions that are called at specified points along the timeline.~~
+  >
+  > ~~这些函数将在时间轴上的指定点被调用~~
+
+- ~~Animation view~~
+
+- ~~创建动画切片时该动画切片应应用于哪一个游戏对象是否可选定？创建动画切片的正确方式时什么？需要先确定动画化对象再去创建其相应的切片吗？~~
+
+- ~~如何为指定游戏对象创建动画切片？~~
 
 - 骨骼
-
-- Animation Events 动画事件
-
-  > functions that are called at specified points along the timeline.、
-  >
-  > 这些函数将在时间轴上的指定点被调用
-
-- Animation view
 
 - where humanoid characters are mapped to a common internal format.？？？映射为一种什么样的内部格式
 
 - Multiple clips cut and sliced from a single imported timeline. ？？？
 
-- 创建动画切片时该动画切片应应用于哪一个游戏对象是否可选定？创建动画切片的正确方式时什么？需要先确定动画化对象再去创建其相应的切片吗？
-
 - 曲线的关键点？曲线的关键点一旦添加，关键帧清单模式下也会给相应位置添加关键帧，那这个关键点为什么要和关键帧的概念区分开？
 
 - 万向锁？？？
 
--  旋转插值类型？？？
+- 旋转插值类型？？？
 
 
 - - -
 
-2021/12/27 - 
+2021/12/27 - 2021/12/28
 
 - - -
