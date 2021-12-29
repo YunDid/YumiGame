@@ -552,15 +552,80 @@ public class WreckOnCollision : MonoBehaviour
 >
 > 1. 在时间轴的某个时间点添加事件后，需要将其与对应对象脚本的函数建立绑定，若该函数带有参数，还必须指定参数
 
-# Animation Controller / 状态机
+# Animation Controller / 动画控制器
 
 > `U3D Document : The Animator Controller acts as a “State Machine” which keeps track of which clip should currently be playing, and when the animations should change or blend together.`
 >
-> 状态机用于跟踪当前状态需要播放哪一个动画切片，并管理各切片应何时改变或何时混合
+> Controller 用于跟踪当前状态需要播放哪一个动画切片，并管理各切片应何时改变或何时混合
+>
+> `U3D Document : An Animator Controller allows you to arrange and maintain a set of animations for a character or other animated Game Object.The controller has references to the animation clips used within it, and manages the various animation states and the transitions between them using a so-called State Machine.`
+>
+> Controller 包含对动画切片的引用，通过状态机，Controller 可以管理各动画状态与状态之间的转换
+>
+> `U3D Document : However even if you just have a single animation clip you still need to place it into an animator controller to use it on a Game Object.`
+>
+> 动画切片若想作用于游戏对象，需要通过 Animation Controller 附加到游戏对象上，因此即使只有一个动画切片，也需要由 Animation Controller 控制管理
 
 - States / 状态
 
   > 在 Animation Controller 中以被线条连接的结点表示，它可以是某个clip动画，也可以是一个子状态机
+
+## Animation State Machines / 动画状态机
+
+> `U3D Document : It is common for a character or other animated Game Object to have several different animations that correspond to different actions it can perform in the game.State machine enable you to control and sequence the animation clips that you want to use on your character or object.`
+>
+> 动画状态机允许你控制动画切片，在游戏对象发生某些行为时，可以播放你想与之对应的动画
+>
+> `U3D Document : Taken together, the set of states, the set of transitions and the variable to remember the current state form a state machine.`
+>
+> 状态集合，状态过渡集合，以及标识记录当前状态的变量形成了状态机
+
+### State / 状态
+
+> `U3D Document : Each state has a Motion associated with it that will play whenever the machine is in that state.`
+>
+> 每种状态对应一种行为，只要在该状态下，就会一直执行该行为直至该状态结束
+
+### Animation Parameters  / 动画参数
+
+> 
+
+### State Machine Transitions / 状态过渡
+
+> `U3D Document : Each view in the animator window has an Entry and Exit node. These are used during State Machine Transitions.`
+>
+> `The Entry node is used when transitioning into a state machine. `
+>
+> `The Exit node is used to indicate that a state machine should exit.`
+>
+> 状态机中的开始与退出结点用于过渡
+>
+> `U3D Document : It is possible to mix state machine transitions with regular state transtitions, so it is possible to transition from state to state, from a state to a statemachine, and from one statemachine directly to another statemachine.`
+>
+> 状态机可支持状态机过渡与常规过渡的混合，状态机 <-> 状态 <-> 状态机 均可支持 
+
+### State Machine Behaviours / 状态机行为
+
+> `U3D Document : State Machine BehavioursA State Machine Behaviour is a special class of script. In a similar way to attaching regular Unity scripts(MonoBehaviours) to individual GameObjects, you can attach a StateMachineBehaviour script to an individual state within a state machine. This allows you to write code that will execute when the state machine enters, exits or remains within a particular state.`
+>
+> 状态机行为是特殊的用于状态机的脚本，该脚本可以附加于状态机的某种状态下，可以在该状态进入，更新，退出，移动等等时机调用
+>
+> 该脚本包含的类继承自 StateMachineBehaviour 类
+
+- State Machine Behaviours / 状态机行为
+
+  > 状态机进入的时机为？
+
+- State Behaviours / 状态行为
+
+### Inverse Kinematics / IK逆向运动学
+
+> `U3D Document : Most animation is produced by rotating the angles of joints in a skeleton to predetermined values. The position of a child joint changes according to the rotation of its parent and so the end point of a chain of joints can be determined from the angles and relative positions of the individual joints it contains. This method of posing a skeleton is known as ***\*forward kinematics\**
+> .`
+>
+> 正向运动学 : 将通过旋转来确定目标点的位置
+>
+> 逆向运动学 : 通过目标点的位置来计算关节的旋转角度，通常此关节旋转的角度具有多中结果
 
 # Avatar for Humanoid Animation / Avatar系统
 
@@ -612,6 +677,16 @@ public class WreckOnCollision : MonoBehaviour
 - 万向锁？？？
 
 - 旋转插值类型？？？
+
+- character 是什么概念？？人形角色？
+
+- Controllor 状态机的输入参数概念？？该参数的意图在于什么？
+
+- 状态机的各个状态为什么会自动循环？
+
+- transition设置了切换的条件为什么会无效？使用的是默认的参数作比较
+
+- 状态的进入明白，状态机何时进入？为什么设置了相应的进入行为但是却没有被调用？
 
 
 - - -
