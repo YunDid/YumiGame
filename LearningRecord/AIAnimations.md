@@ -902,8 +902,15 @@ public class TargetCtrl : MonoBehaviour {
 > 使用虚拟轴的名称便可以在脚本中获取轴的值
 
 - Input.GetAxis("AxisName") 获取 AxisName 轴的值
-
 - Input.GetButtonDown("AxisName") 对于非移动操作的轴，类比ue4操作映射，应使用该函数获取轴值
+
+# Unity3D Models / 模型
+
+> `U3D Document : Models are files that contain data about the shape and appearance of 3D objects, such as characters, terrain, or environment objects.Model files can contain a variety of data, including meshes, materials, and textures. They can also contain animation data, for animated characters.`
+>
+> 模型是包含3D对象形状和外观数据的文件，例如角色，地形，或环境对象
+>
+> 模型还可以包含动画数据，若对象为动画化的对象，还可以包含网格体，材质以及纹理等
 
 - - -
 
@@ -916,4 +923,5 @@ public class TargetCtrl : MonoBehaviour {
 
 - - -
 
-2021/12/30 20:14
+2021/12/30 21:00
+
