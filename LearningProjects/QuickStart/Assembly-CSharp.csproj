@@ -56,14 +56,16 @@
     <Analyzer Include="D:\VisualStudio2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Instantiating Prefabs Examples\Assets\Scripts\Wall.cs" />
-    <Compile Include="Assets\Instantiating Prefabs Examples\Assets\Scripts\Explosion.cs" />
-    <Compile Include="Assets\Instantiating Prefabs Examples\Assets\Scripts\WreckOnCollision.cs" />
-    <Compile Include="Assets\Instantiating Prefabs Examples\Assets\Scripts\Projectile.cs" />
-    <Compile Include="Assets\Instantiating Prefabs Examples\Assets\Scripts\CircleFormation.cs" />
-    <Compile Include="Assets\Instantiating Prefabs Examples\Assets\Scripts\InstantiationExample.cs" />
-    <Compile Include="Assets\Instantiating Prefabs Examples\Assets\Scripts\FireProjectile.cs" />
-    <Compile Include="Assets\Instantiating Prefabs Examples\Assets\Scripts\TurretControl.cs" />
+    <Compile Include="Assets\Instantiating Prefabs Examples\Assets\Scripts\MonoScripts\Wall.cs" />
+    <Compile Include="Assets\Instantiating Prefabs Examples\Assets\Scripts\MonoScripts\Explosion.cs" />
+    <Compile Include="Assets\Instantiating Prefabs Examples\Assets\Scripts\MonoScripts\WreckOnCollision.cs" />
+    <Compile Include="Assets\Instantiating Prefabs Examples\Assets\Scripts\MonoScripts\Projectile.cs" />
+    <Compile Include="Assets\Instantiating Prefabs Examples\Assets\Scripts\MonoScripts\CircleFormation.cs" />
+    <Compile Include="Assets\Instantiating Prefabs Examples\Assets\Scripts\MonoScripts\InstantiationExample.cs" />
+    <Compile Include="Assets\Instantiating Prefabs Examples\Assets\Scripts\MonoScripts\FireProjectile.cs" />
+    <Compile Include="Assets\Instantiating Prefabs Examples\Assets\Scripts\MonoScripts\TurretControl.cs" />
+    <Compile Include="Assets\Instantiating Prefabs Examples\Assets\Scripts\MonoScripts\Collision.cs" />
+    <Compile Include="Assets\Instantiating Prefabs Examples\Assets\Scripts\AnimationScripts\Boom.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Instantiating Prefabs Examples\ProjectSettings\ProjectVersion.txt" />

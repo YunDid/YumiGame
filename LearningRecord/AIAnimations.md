@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-
 # AIAnimations
 
 ## 初识问题汇总
@@ -15,8 +13,8 @@
 ## 计划学习路线
 
 - Unity3D基础 / √
-- Unity3D动画系统 / ing
-- Unity3D模型 + 模型导出格式
+- Unity3D动画系统 / √
+- Unity3D模型 + 模型导出格式 / ing
 - AIAnimations拓展
 
 # Unity3D 编辑器
@@ -106,8 +104,6 @@
 -  世界坐标与相对坐标？如何调整一个游戏对象的世界坐标
 - 全局坐标/局部坐标？
 
-- 
-
 2021/12/22 - 2021/12/23 
 
 - - -
@@ -126,7 +122,9 @@ using UnityEngine;
     Class Name : 需要与脚本文件名相同否则该脚本无法作为组件附加到游戏对象中
     MonoBehaviour : 内置类，用于规范可附加到游戏对象中的组件类的行为标准
 
-    注意: 1.脚本对象的构造由编译器编译时完成，但是脚本文件类的构造函数为运行时构造，所以不要再为其设置构造函数进行初始化了 
+    注意: 
+    	1.脚本对象的构造由编译器编译时完成，但是脚本文件类的构造函数为运行时构造，所以不要再为其设置构造函数进行初始化了 
+    	2.当类继承自MonoBehaviour时使用构造函数会使构造函数在不需要的时间被调用，并且在许多情况下可能会导致 Unity 崩溃
  */
 
 public class QuickStart : MonoBehaviour
@@ -310,13 +308,17 @@ public class WreckOnCollision : MonoBehaviour
 
 > `U3D Document : The Start function is called before the first frame or physics update on an object.`
 >
-> 1. before the first frame or physics update on an object. 在对象执行帧更新or物理更新之前需要被调用进行的初始化
+> 1. before the first frame or physics update on an object. 在对象首次执行帧更新or物理更新之前需要被调用进行的初始化
 
 `注意:`
 
 1. `all the Awakes will have finished before the first Start is called.`
 
    > 所有的Awakes初始化均会在第一个start之前，注意一些重复初始化问题，而且Start可借助Awake完成一些初始化
+   
+2. `Using the constructor when the class inherits from MonoBehaviour will make the constructor to be called at unwanted times and in many cases might cause Unity to crash.`
+
+   > 脚本的构造函数可能会在你不期望的时机被调用，甚至导致unity崩溃，所有尽量不要使用构造函数完成初始化
 
 ### GUI events
 
@@ -334,25 +336,17 @@ public class WreckOnCollision : MonoBehaviour
 >
 > U3D使用脚本中的事件函数来处理发生在对象上的碰撞
 
-**collider**
+**Collider / Trigger**
 
-> 仅仅检测碰撞，并不会对碰撞作出相应的处理
+> Collider 可以认为是记录对象空间占位信息的组件，只有具有 Collider 组件的对象，才会由物理系统去计算发生在该对象上的碰撞
+>
+> 若仅仅想检测碰撞，但是却不希望影响该对象的移动，而可以在inspector面板中将 Collider 勾选配置为 Trigger，可以仅检测碰撞而不产生碰撞效果，具体响应可在下面事件中作出
 
-#### OnCollisionEnter()
+#### OnCollisionEnter() / OnTriggerEnter()
 
-#### OnCollisionStay()
+#### OnCollisionStay() / OnTriggerStay()
 
-####  OnCollisionExit()
-
-**Trigger**
-
-> 当 collider 被配置为 Trigger 后，才会对作出物理响应
-
-#### OnTriggerEnter()
-
-#### OnTriggerStay()
-
-####  OnTriggerExit()
+####  OnCollisionExit() / OnTriggerExit()
 
 ## Order of execution for event functions / 事件的执行顺序
 
@@ -379,7 +373,7 @@ public class WreckOnCollision : MonoBehaviour
 
 > `U3D Document : A coroutine allows you to spread tasks across several frames. In Unity, a coroutine is a method that can pause execution and return control to Unity but then continue where it left off on the following frame.`
 >
-> 一个脚本中的普通事件函数只能在一帧完成，如果需要有一定的过度效果，就必须将该事件函数处理的任务分散在多个帧中逐步完成，协程允许将一个任务分散在多个帧中执行，它可以在某一帧中停止执行，将控制权返还给unity，随后在下一帧继续执行因暂停而未完成的任务
+> 一个脚本中的普通事件函数只能在一帧完成，如果需要有一定的过渡效果，就必须将该事件函数处理的任务分散在多个帧中逐步完成，协程允许将一个任务分散在多个帧中执行，它可以在某一帧中停止执行，将控制权返还给unity，随后在下一帧继续执行因暂停而未完成的任务
 
 ## Attributes  / 特性
 
@@ -398,7 +392,8 @@ public class WreckOnCollision : MonoBehaviour
 - UEGamePlay框架
 - prefab is instantiated / 预制件的实例化，在什么情景下算实例化成功？资产中的预制件算不算？场景中的预制件算不算？脚本属性中的预制件引用对应的实体算不算？
 - MonoBehaviour instance is created？ GameObject with the script component is instantiated
-- collider and Trigger
+- ~~collider and Trigger~~
+- ~~刚体与碰撞体~~
 
 
 - - -
@@ -498,7 +493,7 @@ public class WreckOnCollision : MonoBehaviour
 
 > `U3D Document : These External files can contain animation data in the form of a linear recording of the movements of objects within the file.`
 >
-> 这些外部源文件可以以 线性记录文件中对象移动 的方式存储动画数据
+> 这些外部源文件可以通过 线性记录文件中对象移动 的方式存储动画数据
 >
 > 详细略，此前为略读了解概念版本
 
@@ -524,7 +519,7 @@ public class WreckOnCollision : MonoBehaviour
 
   > 可以由游戏对象的位置，旋转，缩放形成
 
-- Component properties such as material colour, the intensity of a light, the volume of a sound 
+- Component properties such as material color, the intensity of a light, the volume of a sound 
 
   > 可以由组件的属性形成，例如材质颜色变化，光照强度变化，声音强弱变化
   >
@@ -635,7 +630,7 @@ public class WreckOnCollision : MonoBehaviour
 >
 > `U3D Document : It is possible to mix state machine transitions with regular state transtitions, so it is possible to transition from state to state, from a state to a statemachine, and from one statemachine directly to another statemachine.`
 >
-> 状态机可支持状态机过渡与常规过渡的混合，状态机 <-> 状态 <-> 状态机 均可支持 
+> 状态机可支持状态机过渡与常规过渡的混合，状态机 <-> 状态机 <-> 状态 <-> 状态 均可支持 
 
 #### State Machine Behaviours / 状态机行为
 
@@ -755,6 +750,8 @@ public class TargetCtrl : MonoBehaviour {
 
 - ~~如何为指定游戏对象创建动画切片？~~
 
+- ~~State Machines consist of **States**, **Transitions** and Events 事件怎么体现~~
+
 - 骨骼
 
 - where humanoid characters are mapped to a common internal format.？？？映射为一种什么样的内部格式
@@ -778,8 +775,6 @@ public class TargetCtrl : MonoBehaviour {
 - 状态的进入明白，状态机何时进入？为什么设置了相应的进入行为但是却没有被调用？
 
 - 标识当前状态的变量？？？？ the variable to remember the current state？？？？
-
-- State Machines consist of **States**, **Transitions** and Events 事件怎么体现
 
 - 动画层的顺序会有先后显示的含义吗？比如在上面的动画会覆盖下面的动画
 
@@ -889,7 +884,7 @@ public class TargetCtrl : MonoBehaviour {
 
 > `U3D Document : A virtual axis (plural: axes) is mapped to a control, such as a button or a key. When the user activates the control, the axis receives a value in the range of [–1..1]. You can use this value in your scripts.`
 >
-> 用户的输入操作 -> 激活相应的控 -> 该控件映射到的轴可以接受相应的[-1,1]之间的某个值 -> 从而脚本获取该值
+> 用户的输入操作 -> 激活相应的控件 -> 该控件映射到的轴可以接受相应的[-1,1]之间的某个值 -> 从而脚本获取该值
 >
 > `U3D Document : To map a key or button to an axis, enter its name in the Positive Button or Negative Button property in the Input Manager.`
 >
@@ -921,7 +916,15 @@ public class TargetCtrl : MonoBehaviour {
 - 人物移动的话应该算key类型的控件，长按如何处理的？如何通过轴的值去处理长按操作的？
 - 是否非移动型的操作映射都可以使用GetButtonDown来接受轴值呢？
 
+
 - - -
 
 2021/12/30 21:00
 
+1. ue4状态机
+2. AI项目结构
+3. 工具导入
+4. 骨骼
+5. 模型文件
+6. 导入
+7. 碰撞范围
