@@ -594,7 +594,7 @@ public class WreckOnCollision : MonoBehaviour
 
 ### Parameters / 动画参数
 
-> 这东西到底是干啥的？？？
+> 动画参数作用于整个 Animation Controller，有多种类型，不单单从属于某一动画层 or 状态，不同状态的过渡可使用动画参数用于过渡条件，由过渡状态前状态调整参数后，Transition 直接判断参数值选择下一状态
 
 ### Animation State Machines / 动画状态机
 
@@ -770,7 +770,7 @@ public class TargetCtrl : MonoBehaviour {
 
 - 状态机的各个状态为什么会自动循环？
 
-- transition设置了切换的条件为什么会无效？使用的是默认的参数作比较
+- ~~transition设置了切换的条件为什么会无效？使用的是默认的参数作比较~~
 
 - 状态的进入明白，状态机何时进入？为什么设置了相应的进入行为但是却没有被调用？
 
