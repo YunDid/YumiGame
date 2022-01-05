@@ -5,17 +5,18 @@
 1. ~~动画数据？~~
 2. ~~unity3D已有的内置算法已经可实现补间动画了吗？~~
 3. ~~IK系统？~~
-4. fbx/animation 动画文件？ 模型文件
+4. ~~fbx/animation 动画文件？ 模型文件~~
 5. tensorflow算法训练 训练什么？输入输出？预期产出？
 6. 补间动画？ 动画融合与向量矫正？物理反馈？
-7. Siggraph2019？
+7. ~~Siggraph2019？~~
 
 ## 计划学习路线
 
-- Unity3D基础 / √
-- Unity3D动画系统 / √
-- Unity3D模型 + 模型导出格式 / ing
-- AIAnimations拓展
+- Unity3D基础概念 / √
+- Unity3D动画系统概念初识 / √
+- Unity初级编程 - 中级编程 / ing
+- 动画系统demo实践 完成模型导入-> 动画绑定 -> 状态机组织动画
+- 着手AIAnimation框架，着手动画系统的改写
 
 # Unity3D 编辑器
 
@@ -594,7 +595,7 @@ public class WreckOnCollision : MonoBehaviour
 
 ### Parameters / 动画参数
 
-> 动画参数作用于整个 Animation Controller，有多种类型，不单单从属于某一动画层 or 状态，不同状态的过渡可使用动画参数用于过渡条件，由过渡状态前状态调整参数后，Transition 直接判断参数值选择下一状态
+> 这东西到底是干啥的？？？
 
 ### Animation State Machines / 动画状态机
 
@@ -770,7 +771,7 @@ public class TargetCtrl : MonoBehaviour {
 
 - 状态机的各个状态为什么会自动循环？
 
-- ~~transition设置了切换的条件为什么会无效？使用的是默认的参数作比较~~
+- transition设置了切换的条件为什么会无效？使用的是默认的参数作比较
 
 - 状态的进入明白，状态机何时进入？为什么设置了相应的进入行为但是却没有被调用？
 
@@ -920,11 +921,3 @@ public class TargetCtrl : MonoBehaviour {
 - - -
 
 2021/12/30 21:00
-
-1. ue4状态机
-2. AI项目结构
-3. 工具导入
-4. 骨骼
-5. 模型文件
-6. 导入
-7. 碰撞范围
