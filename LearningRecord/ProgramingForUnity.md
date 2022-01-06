@@ -505,3 +505,283 @@ public class Shoot : MonoBehaviour
 
 2022/1/6 15:43
 
+----------
+
+# Properties / 属性
+
+> 通过属性访问器来访问成员而不是通过 public 来访问的优势在于
+>
+> 1. 可是使该成员 只读/只写，省去相应访问器即可
+> 2. 访问器中可添加一些方法
+
+```c# 
+using UnityEngine;
+using System.Collections;
+
+public class Player
+{
+    //成员变量可以称为字段
+    private int experience;
+
+    //Experience 是一个基本属性
+    public int Experience
+    {
+        get
+        {
+            //其他一些代码
+            return experience;
+        }
+        set
+        {
+            //其他一些代码
+            experience = value;
+        }
+    }
+```
+
+
+
+# Generics / 泛型
+
+> where 关键字指定泛型类型约束
+
+- Generics  Class
+
+  > public class ClassName\<T> {}
+
+- Generics  Function
+
+  > public returnType FuncName\<T> () {}
+
+- Generic Constraint / 泛型约束
+
+  > 区别于c++，c++仅仅起暗示作用并不会实际约束，而c#会对期望的类型作出约束
+  
+  public class ClassName\<T> where T : ConstraintList {}
+  
+  public returnType FuncName\<T> ()  where T : ConstraintList {}
+  
+  ConstraintList / 约束列表 : 
+  
+  1. Struct T类型必须为值类型
+  2. new() T类型必须包含无参的公共构造函数，构造函数约束需要出现在约束列表的最后
+  3. class T类型必须为引用类型
+  4. ClassName T类型必须为 ClassName 类型或派生自 ClassName 基类类型
+  5. InterfaceName T类型必须已实现 InterfaceName 接口
+
+# Member Hiding / 成员隐藏
+
+> 在进行上转型时，为了能够调用父类的方法或属性，因此将子类的同名方法或属性前加 new 关键字进行隐藏，正常通过子类引用调用时并无影响，但是在上转型时，将隐藏子类的成员，而调用父类的成员
+
+```c# 
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Fasther {
+
+    public int para = 10;
+
+    public virtual void SayHello() {
+        Debug.Log("Hello! Father!");
+    }
+}
+
+public class Childern : Fasther
+{
+    new public void SayHello()
+    {
+        Debug.Log("Hello! Children!");
+    }
+}
+
+public class Inheritated : MonoBehaviour
+{
+    // Start is called before the first frame update
+    void Start()
+    {
+        Fasther father = new Childern();
+        father.SayHello();
+
+        Childern children = new Childern();
+        children.SayHello();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
+}
+```
+
+---------------
+
+**Questions:**
+
+1. new 关键字隐藏的意义是什么？没有new在上转型时，不仍然会调用父类的方法吗，为何需要new呢？
+2. virtual 需要搭配 override ，只有其中一个将表示什么意思
+
+---------------
+
+# Overriding / 重写
+
+> c#中重写需要将父类被重写的方法添加 virtual 关键字声明为虚函数，子类添加 override 关键字指明重写
+
+# Interface / 接口
+
+> c#接口也有泛型，实现接口时使用 : + 接口 即可
+
+```c# 
+using UnityEngine;
+using System.Collections;
+
+//This is a basic interface with a single required
+//method.
+public interface IKillable
+{
+    void Kill();
+}
+
+//This is a generic interface where T is a placeholder
+//for a data type that will be provided by the 
+//implementing class.
+public interface IDamageable<T>
+{
+    void Damage(T damageTaken);
+}
+```
+
+
+
+# Extension Methods / 拓展方法
+
+> Extension Methods 拓展方法可以不创建某个类的派生类，也不更改某个类，但是为该类"新增"了公用的方法
+>
+> `注意:`
+>
+> 1. 拓展方法需要有一个静态类作容器
+> 2. 拓展方法本身也为静态方法，但是可以像实例方法一样调用
+> 3. 拓展方法的参数指定拓展的类型，前需要有关键字this
+> 4. 拓展方法仍不可访问拓展类的私有成员
+
+```c# 
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Extend : MonoBehaviour
+{
+    // Start is called before the first frame update
+    void Start()
+    {
+        Transform trans = GetComponent<Transform>();
+        trans.Logout();
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+}
+
+public static class Container {
+    public static void Logout(this Transform trans) {
+        Debug.Log("Tranform 类中被\"添加\"了这个方法啦！");
+    } 
+}
+```
+
+
+
+# Lists and Dictionaries / 列表与字典
+
+> List 为动态数组，以泛型方式创建，并制定元素类型，提供Add，Remove，Sort，Clear等接口
+>
+> Dictionarie 类似于map，以键值对形式存储元素
+>
+> `注意:`
+>
+> 1. 需要先引用命名空间 System.Collections.Generic;
+
+```c# 
+// List
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+public class SomeClass : MonoBehaviour
+{
+    void Start () 
+    {
+        //This is how you create a list. Notice how the type
+        //is specified in the angle brackets (< >).
+        List<BadGuy> badguys = new List<BadGuy>();
+
+        //Here you add 3 BadGuys to the List
+        badguys.Add( new BadGuy("Harvey", 50));
+        badguys.Add( new BadGuy("Magneto", 100));
+        badguys.Add( new BadGuy("Pip", 5));
+
+        badguys.Sort();
+
+        foreach(BadGuy guy in badguys)
+        {
+            print (guy.name + " " + guy.power);
+        }
+
+        //This clears out the list so that it is
+        //empty.
+        badguys.Clear();
+    }
+}
+
+// Dictionarie
+
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+public class SomeOtherClass : MonoBehaviour 
+{
+    void Start ()
+    {
+        //This is how you create a Dictionary. Notice how this takes
+        //two generic terms. In this case you are using a string and a
+        //BadGuy as your two values.
+        Dictionary<string, BadGuy> badguys = new Dictionary<string, BadGuy>();
+
+        BadGuy bg1 = new BadGuy("Harvey", 50);
+        BadGuy bg2 = new BadGuy("Magneto", 100);
+
+        //You can place variables into the Dictionary with the
+        //Add() method.
+        badguys.Add("gangster", bg1);
+        badguys.Add("mutant", bg2);
+
+        BadGuy magneto = badguys["mutant"];
+
+        BadGuy temp = null;
+
+        //This is a safer, but slow, method of accessing
+        //values in a dictionary.
+        if(badguys.TryGetValue("birds", out temp))
+        {
+            //success!
+        }
+        else
+        {
+            //failure!
+        }
+    }
+}
+```
+
+
+
+-----
+
+2022/1/6 21:48
+
