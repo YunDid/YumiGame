@@ -785,3 +785,268 @@ public class SomeOtherClass : MonoBehaviour
 
 2022/1/6 21:48
 
+# Coroutines / 协程
+
+> 协程本质上是一个用返回类型 IEnumerator 声明的函数，并在主体的某个位置包含 yield return 语句
+>
+> yield return null; 是暂停执行下一帧恢复的调用点
+>
+> 要将协程设置为 运行/停止 态，需要使用 StartCoroutine()  / StopCoroutine() / StopAllCoroutines()
+
+- StartCoroutine(string name, object parameter = null)
+
+  > 使用字符串类启动具有特定名称的协程并可以使用相应的 StopCoroutine() 来停止该协程的执行，同时可以指定参数 parameter 
+
+- StopCoroutine(string name)
+
+- StopAllCoroutines()
+
+  > 停止该行为上运行的所有协程
+
+- WaitForSeconds(float time)
+
+  > 使用缩放时间来使协程暂停指定秒数
+  >
+  > `注意:`
+  >
+  > 1. 实际暂停时间等于 给定时间 * Time.timeScale
+  > 2. 其只能与 yield 语句结合使用，暂停时间过后，继续从当前位置执行
+
+```c# 
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Coroutines : MonoBehaviour
+{
+    // Start is called before the first frame update
+    void Start()
+    {
+        StartCoroutine("MoveTo", target);
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+
+    IEnumerator MoveTo(Transform target) {
+
+        while (Vector3.Distance(transform.position, target.position) > 1f) {
+            print(transform.position - target.position);
+            transform.position = Vector3.Lerp(transform.position, target.position, speed * Time.deltaTime);
+
+            yield return null;
+        }
+
+        print("Reached the target.");
+
+        yield return new WaitForSeconds(1f);
+    }
+
+    public Transform target;
+    public float speed = 1f;
+}
+```
+
+
+
+# Quaternions / 四元数
+
+> Quaternions 用来管理旋转，不要轻易改变，但是可以通过unity提供的相应接口完成旋转管理
+
+- Quaternion.identity
+
+  > `U3D Document : It Effectively set its Euler rotation to (0,0,0) or no rotation.`
+  >
+  > 设置一个对象的 rotation 属性为 Quaternion.identity，即无旋转，欧拉角值为 (0,0,0)
+
+- Quaternion.LookRotation (Vector3 forward, Vector3 upwards = Vector3.up)
+
+  > `U3D Document : Creates a rotation with the specified `forward` and `upwards` directions.`
+  >
+  > 暂略，有点懵
+
+- Quaternion.Slerp (Quaternion a, Quaternion b, float t)
+
+  > `U3D Document : Quaternion A quaternion spherically interpolated between quaternions a and b. The parameter t is clamped to the range [0, 1]，If the value of the parameter is close to 0, the output will be close to a, if it is close to 1, the output will be close to b.`
+  >
+  > 非线性插值，可以按比例进行球形插值，t的范围为[0,1]，t越接近0，插值越接近a，t越接近1，插值越接近b
+
+# Delegates / 委托
+
+> 委托是存有对某个 方法 引用的引用类型变量
+
+## Declaration / 声明
+
+> delegate 关键字可以声明可由该委托引用的方法
+>
+> `注意:`
+>
+> 1. 委托与其可引用的方法具有相同的函数签名
+
+## Instantiation / 实例化
+
+> 委托对象的实例化必须通过 new 创建，并且初始化时给定需要引用的方法名即可
+
+## Multicasting of a Delegate / 委托的多播
+
+> \+ 可用于委托的合并，一个合并委托将调用它所合并的委托
+>
+> \- 可用于合并委托的移除
+
+```c# 
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Delegates : MonoBehaviour
+{
+    public delegate void Func(int param);
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        Func func1 = new Func(printLog);
+        func1(1);
+        func1 += printLoggg;
+        func1(1);
+    }
+
+    public void printLog(int param) {
+        Debug.Log("printLog() 被调用!");
+    }
+
+    public void printLoggg(int param)
+    {
+        Debug.Log("printLoggg() 被调用!");
+    }
+}
+```
+
+
+
+# Attributes / 特性
+
+> `U3D Document : Attributes allow you to attach additional behavior to the methods and variables you create.`
+>
+> Attributes 允许你赋予创建的变量或者方法特别的行为
+>
+> `注意:`
+>
+> 1. 特性书写形式为 []，若带参数则可以使用()指出
+
+- Range
+
+  > [Range(min,max)] 可以在 inspectors 面板中显示可调整的滚动条来设置变量的大小0
+
+- ExecuteInEditMode
+
+  > [ExecuteInEditMode] 可以使脚本在非运行模式下被执行
+  >
+  > `注意:`
+  >
+  > 1. 执行结果将是不可逆转的永久性的，需要注意该特性的执行后果
+
+
+
+# Events / 事件
+
+> 事件使用 Publisher / Subscriber 发布者/订阅者 机制，使得订阅了发布者的订阅者在发布者发生变动时，作出响应的事件处理
+>
+> delegate 关键字完成委托的创建，event 关键字完成事件的创建
+
+## Publisher / 发布者
+
+> 创建事件处理任务的委托，并创建事件
+>
+> 设置相应的事件通知函数，完成对事件的调用，进而完成通知
+>
+> 作出改用时完成事件通知函数的调用
+>
+> `注意:`
+>
+> 1. 事件一般设置为共有的静态成员
+
+## Subscriber / 订阅者
+
+> 设置与委托相对应的事件处理函数
+>
+> 设置相应的接口完成对事件的订阅与取消订阅
+
+```c# 
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class EventsPublisher : MonoBehaviour
+{
+
+    //委托
+    public delegate void EventDispose();
+
+    //事件
+    public static EventDispose eventDispose;
+
+    //事件通知函数
+    public void Notify() {
+        if (eventDispose != null) {
+            //调用已订阅的类的相应事件处理函数
+            eventDispose();
+        }
+    }
+
+    public void setValue(float value) {
+        elem = value;
+        Notify();
+    }
+
+    // Start is called before the first frame update 
+    void Start()
+    {
+        EventSubscriber SubObj = new EventSubscriber();
+        SubObj.Subscribe();
+
+        EventsPublisher PubObj = new EventsPublisher();
+        PubObj.setValue(100f);
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+
+    public float elem;
+}
+
+public class EventSubscriber {
+
+    //订阅事件
+    public void Subscribe() {
+        EventsPublisher.eventDispose += new EventsPublisher.EventDispose(Dispose);
+    }
+
+    //取消订阅事件
+    public void CancelSubscribe()
+    {
+        EventsPublisher.eventDispose -= new EventsPublisher.EventDispose(Dispose);
+    }
+    //事件处理函数
+    public void Dispose() {
+        Debug.Log("事件被触发啦!");
+    }
+}
+```
+
+
+
+-------
+**Question:** 
+
+- Quaternions / 四元数 以后细锁
+
+-------
+
+2022/1/7 15:00
