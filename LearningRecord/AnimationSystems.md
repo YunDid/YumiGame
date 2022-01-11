@@ -283,13 +283,78 @@
 >
 > 可以将切片的 Root Motion 中某些元素 bake into the pose 来使这些元素不会影响根运动
 
+## Additional Settings / 其他设置
+
+### Mirror Setting / 镜像设置
+
+> `U3D Document : This particular setting is exclusively for humanoid rigged animation.`
+>
+> 镜像设置针对于人形动画
+>
+> `U3D Document : When enabled, the Mirror setting flips the animation on the YZ plane down the character’s middle. Since this flips both the pose and the Root Motion, you can use it for making a left turn into a right turn, for example.`
+>
+> 勾选镜像设置后，模型YZ平面将以人物中心为轴翻转
+>
+> `注意:`
+>
+> 1. 翻转后根运动也将受影响
+
+### Additive Reference Pose Setting / 附加引用姿势
+
+> `U3D Document : By using Additive Animation, you can build on and make alterations to any existing animation. `
+>
+> 该设置可以以已存在的动画为基础，并在此基础上作出更改，更改将覆盖原绑定的值
+>
+> `U3D Document : Since Additive Animation is added to an existing animation, it’s stored as deltas from a Reference Pose. Deltas are small differences or changes.`
+>
+> 因为附加动画已被附加至已存在的动画，所以附加动画以针对于参考/原动画姿势的增量形式存储
+>
+> `U3D Document : Make an animation be treated as Additive Animation :`
+>
+> `1. In the Inspector, enable Additive Reference Pose`
+>
+> `2. Select the frame number that should serve as the reference pose.`
+>
+> 创建 Additive Animation 的方式是先勾选附加选项，然后选择作为参考姿势的帧
+
+### Curves / 曲线
+
+> `U3D Document : When Animation Clips are imported, their curves are locked and will appear as read-only. However, as part of the import process, more curves can be added so you can edit them. These curves can be used to store data that can vary over the course of the animation and should not be confused with the standard Animation Curves you have used when creating and editing Animation Clips.  `
+>
+> 此曲线区别于动画曲线，该曲线用于存储动画播放过程中随之改变的数据，用于编辑
+>
+> 1.  Select the Add (+) button under the Curves foldout. 
+> 2.  Name the curve, so its value can be found at runtime. 
+> 3.  Make sure the associated Animator Controller has a parameter with the same name as your curve. 
+>
+> `注意:`
+>
+> 1. 确保该曲线名称与该动画切片附加到的控制器某参数具有相同的名称
+
+### Events / 事件
+
+> `U3D Document : In the Animation Importer, where there is an option for the Animation Clip to have an Animation Event added.`
+>
+> 导入动画模型时，可以为动画切片在没有具体游戏对象上下文的情况下添加事件
+>
+> `注意:`
+>
+> 1. 注意添加事件调用方法名需要与之后将调用的方法一致
+
+# Animation Events / 动画事件
+
+> `U3D Document : Animation Events call methods in MonoBehaviour scripts. In order for an Animation Event to call a method from a script, the script must be attached to the same GameObject as the Animator component through which the Animation Clip is playing.`
+>
+> 动画事件调用 MonoBehaviour 脚本下的方法，为了保证事件能够调用到脚本中的方法，该方法必须被附加同一个游戏对象上
+
 -------
 **Questions:** 
 
 - simulation data 仿真是个什么样的动画数据？
 - rather than just moving in absolute terms 什么意思？
 - Root Motion / 根运动
+- Curves / 曲线 曲线的名称和某控制器参数要相同？为什么要相同，是因为这个曲线控制的就是该参数嘛？
 
 -------
 
-2022/1/11 15:42
+2022/1/11 15:42 - 2022/1/11 21:35
