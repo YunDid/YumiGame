@@ -141,6 +141,12 @@
 >
 > 但是第一个关键帧与最后一个关键帧的切线相互连接，便于编辑循环动画
 
+## Animation Events / 动画事件
+
+> `U3D Document : Animation Events call methods in MonoBehaviour scripts. In order for an Animation Event to call a method from a script, the script must be attached to the same GameObject as the Animator component through which the Animation Clip is playing.`
+>
+> 动画事件调用 MonoBehaviour 脚本下的方法，为了保证事件能够调用到脚本中的方法，该方法必须被附加同一个游戏对象上
+
 # Model-Specific Animation / 模型动画
 
 ## Fundamentals / 基础
@@ -168,6 +174,24 @@
 > `U3D Document : In Unity, bones are represented by Transforms.`
 >
 > 在Unity中，骨骼由 Transforms 表示
+
+### Triangle Mesh / 三角网格
+
+> `U3D Document : Generally, animated models have a skinned mesh. `
+>
+> 动画化的模型一般都会有一个蒙皮网格体
+>
+> `U3D Document : Skinning is the process of connecting each vertex of a mesh to one or multiple bones and then giving those bones a weight to affect that vertex. `
+>
+> 而蒙皮使模型每个网格体的顶点会关联到一个或多个骨骼，这些骨骼被赋予了权重来决定对顶点移动的影响程度
+>
+> `U3D Document : In Unity, bones are represented by the Transforms of a model，which are part of GameObjects, so each vertex moves with a weighted combination of the Transforms it is skinned to. `
+>
+> 在Unity中，骨骼通过模型的 Transforms 来表示，即游戏对象上的 transform 组件，所以网格体顶点的移动将跟随其附加到的所有 Transforms 权重组合的变化而变化 
+>
+> `注意:`
+>
+> 1. 一个模型可能有多个游戏对象用以表示多个骨骼
 
 ### Forward Kinematics / FK正向动力学
 
@@ -229,13 +253,13 @@
 
 - Custom Properties / 定制属性
 
-# Cutting Imported Animation Clips / 剪切动画切片
+## Cutting Imported Animation Clips / 剪切动画切片
 
 > `U3D Document : You’ll use animation-specific settings to cut an imported Animation Clip. One of the most common uses for cutting animation is using motion capture (or mocap) data, but it can be used to adjust any imported animation. `
 >
 > 使用 animation-specific 针对动画切片的设置完成对导入动画的剪切
 
-## Timeline / 时间轴
+### Timeline / 时间轴
 
 > `U3D Document : The animation timeline shows all of the animation data for the current Animation Clip`
 >
@@ -245,7 +269,7 @@
 >
 > 通过拖拽切片来对动画切片进行剪切，也可通过 Start 与 End 完成对剪切点的选择
 
-## Timeline Settings / 时间轴设置
+### Timeline Settings / 时间轴设置
 
 - Loop Time / 循环时间
 
@@ -273,19 +297,29 @@
   >
   > 该设置在混合动画时很有用，被混合的动画切片可能需要具备相应的条件，比如设置标准化的起始姿势
 
-## Root Motion / 根运动
+### Root Motion / 根运动
 
 > `U3D Document : Root nodes are used to define Root Motion in animations. Root Motion is when an animation causes GameObjects to offset from their previous position, rather than just moving in absolute terms.This means you can make movements look a lot more realistic, as they can be based on the animation itself and not simply scripted. `
 >
 > 根运动是指一个动画导致游戏对象的位置发生变动，而不是通过绝对值移动，这意味着你可以作出更自然的移动，因为这些移动将基于动画本身
 >
+> `U3D Document : For example, if a GameObject is animated to move forward on its z-axis, then with Root Motion, the GameObject would continue to move further and further along the z-axis as the animation loops. Without Root Motion, whenever the animation loops, the GameObject would return to where it started and then move forward in its z-axis again. `
+>
+> 例如动画中游戏对象将沿z轴移动，那么场景中随着动画的循环播放，游戏对象将一直沿z轴移动，但是如果没有根运动，那么场景中游戏对象只会随动画循环播放而不断地从初始位置移动，再恢复，再移动
+>
 > `U3D Document : You can fix these things by baking some elements of the Root Motion into the pose. This means they won’t affect the Root Motion at all.`
 >
 > 可以将切片的 Root Motion 中某些元素 bake into the pose 来使这些元素不会影响根运动
 
-## Additional Settings / 其他设置
+- Root Node / 根节点
 
-### Mirror Setting / 镜像设置
+  > `U3D Document : The Root node is used as a reference for this Motion.`
+  >
+  > 根节点用作根运动的参考
+
+### Additional Settings / 其他设置
+
+#### Mirror Setting / 镜像设置
 
 > `U3D Document : This particular setting is exclusively for humanoid rigged animation.`
 >
@@ -299,7 +333,7 @@
 >
 > 1. 翻转后根运动也将受影响
 
-### Additive Reference Pose Setting / 附加引用姿势
+#### Additive Reference Pose Setting / 附加引用姿势
 
 > `U3D Document : By using Additive Animation, you can build on and make alterations to any existing animation. `
 >
@@ -317,7 +351,7 @@
 >
 > 创建 Additive Animation 的方式是先勾选附加选项，然后选择作为参考姿势的帧
 
-### Curves / 曲线
+#### Curves / 曲线
 
 > `U3D Document : When Animation Clips are imported, their curves are locked and will appear as read-only. However, as part of the import process, more curves can be added so you can edit them. These curves can be used to store data that can vary over the course of the animation and should not be confused with the standard Animation Curves you have used when creating and editing Animation Clips.  `
 >
@@ -331,7 +365,7 @@
 >
 > 1. 确保该曲线名称与该动画切片附加到的控制器某参数具有相同的名称
 
-### Events / 事件
+#### Events / 事件
 
 > `U3D Document : In the Animation Importer, where there is an option for the Animation Clip to have an Animation Event added.`
 >
@@ -340,12 +374,6 @@
 > `注意:`
 >
 > 1. 注意添加事件调用方法名需要与之后将调用的方法一致
-
-# Animation Events / 动画事件
-
-> `U3D Document : Animation Events call methods in MonoBehaviour scripts. In order for an Animation Event to call a method from a script, the script must be attached to the same GameObject as the Animator component through which the Animation Clip is playing.`
->
-> 动画事件调用 MonoBehaviour 脚本下的方法，为了保证事件能够调用到脚本中的方法，该方法必须被附加同一个游戏对象上
 
 -------
 **Questions:** 
@@ -358,3 +386,76 @@
 -------
 
 2022/1/11 15:42 - 2022/1/11 21:35
+
+-------
+
+# Model Rig /  模型Rig
+
+> `U3D Document : Rigs are a way of defining the structure of the model being imported and are used to define how animations play.`
+>
+> Rig 定义了模型导入时的结构以及其所有附加动画的播放方式
+
+## Configuring Generic Rigs / 配置 Generic Rig
+
+- Animation Type setting / 动画类型设置
+
+  > 1. None
+  > 2. Legacy
+  > 3. Generic
+  > 4. Humaniod
+
+- Avatar Definition / Avatar 定义
+
+  > `U3D Document : Avatars are an asset representation of the model’s Rig. They take different forms depending on whether the Rig is Generic or Humanoid.`
+  >
+  > Avatar 是资产，在 Project 窗口可见，代表了模型的 Rig，Avatar 类型由模型 Rig 类型决定
+
+- Root Node / 根节点设置
+
+- Skin Weights / 蒙皮权重
+
+  > `U3D Document : The Skin Weights setting allows you to adjust how many bones a vertex can be skinned to. `
+  >
+  > 可以设置一个网格体顶点可以附加多少骨骼，默认为4个
+
+- Optimize Game Objects / 优化游戏对象
+
+  > `U3D Document : Models can have very complicated hierarchies. This can result in having many GameObjects that are there simply to define the positions of the vertices of a skinned mesh. `
+  >
+  > 模型可能有复杂的层级结构，这将导致其附加有多个游戏对象仅用于表示蒙皮网格体的顶点位置
+  >
+  > `U3D Document : If Optimize GameObjects is enabled, all GameObjects that have no components on them are removed. The Skinned Mesh is then moved directly by the animation. `
+  >
+  > 启用该设置将使模型上所有没有其他组件的游戏对象被移除，蒙皮骨骼的运动将由动画驱使
+  >
+  > `U3D Document : To keep the GameObject(s), you need to use the Expose Extra Transforms settings. `
+  >
+  > 通过 Expose Extra Transforms 选项可以选择保留某些游戏对象而不被优化移除
+
+- Avatar Masks / Avatar 遮罩
+
+  > `U3D Document : Avatar Masks are a way of preventing animation data from being written to its binding. `
+  >
+  > Avatar Masks 可以用于防止动画数据的值被写入到绑定
+  >
+  > `U3D Document : Transform data is not used from sources that have been masked.`
+  >
+  > 变换数据将不会被写入到被遮罩的源
+  >
+  > `注意:`
+  >
+  > 1. It’s important to remember that Avatar Masks only mask Transform data. They do not mask data on the same GameObject as a masked Transform.
+
+## Configuring Humaniod Rigs / 配置 Humaniod Rig
+
+> 
+
+
+
+-------
+
+**Question :** 
+
+- Avatar Masks 的具体设置不是很理解
+
+-------
