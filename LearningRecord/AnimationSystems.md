@@ -48,7 +48,29 @@
 >
 > 1. 每个值都具有其意义，其意义取决于与其一对一绑定的特定字段
 
-## Animation Mode / 动画化方式
+## Binding System / 绑定系统
+
+> `U3D Document : Bindings have two parts ：A Transform path，A Property name.`
+>
+> 动画窗口中的绑定包含两部分，一个是索引到层级结构中的游戏对象的路径，一个是动画化字段的具体属性名称
+>
+> `U3D Document : The Transform path is a string that includes: `
+>
+> `1. The names of the Transforms in the hierarchy that must be traversed to get to the GameObject.`
+>
+> `2. The component and property that is to be animated. `
+>
+> 转换路径仍为字符串，该字符串格式为 : [ 能在层级结构中索引到存在游戏对象的层级名称 - 动画化的字段名称 ]
+>
+> `U3D Document : Any properties on the same GameObject as the Animator component have a blank path, as no Transforms need to be traversed to get to that property. Any properties on a direct child of the GameObject with the Animator component have a Transform path of just that child’s name. This continues down the hierarchy for other GameObjects. `
+>
+> Animator 组件所附加上的游戏对象的属性具有默认空白路径，其直接子对象也具有子对象名称起始的默认路径
+>
+> `U3D Document : It’s important to remember that this pattern for bindings means that only properties on the same GameObject as the Animator component and below it in the hierarchy can have their properties controlled by the Animator.`
+>
+> 这种绑定模式意味着 Animator 只能向下控制游戏对象即子游戏对象的动画化属性
+
+### Animation Mode / 动画化方式
 
 > `U3D Document : When an animation is playing, the current time for its Animation Clip changes. At any given time, the values for all the bindings are being checked and the fields that those bindings correspond to have their values set.`
 >
@@ -118,34 +140,6 @@
 --------
 
 2022/1/7 21:42 - 2022/1/10 17:52
-
-# Animation Windows / 动画窗口
-
-## Keyframes / 关键帧
-
-> `U3D Document : These keyframes hold information on the value of the Animation Curve at a specific time, as well as how to interpolate the values in-between.`
->
-> 关键帧记录有曲线在特定时间下的特定值，以及在两值之间插值的方式
-
-## Keyframes Tangents / 关键帧切线
-
-> `U3D Document : The value of an Animation Curve at any given time is the interpolation between the previous and next Keyframe. The exact value of this interpolation is calculated using the tangents of the Keyframes.`
->
-> 关键帧切线可以用于计算两关键帧之间任意时刻的插值
->
-> `U3D Document : Each Keyframe has two tangents: An in-tangent (on the left), An out-tangent (on the right)`
->
-> 每个关键帧有两个切线，一个为内切线(左侧)，一个为外切线(右侧)
->
-> `U3D Document : The exceptions to this are the first and last keyframes: the in- and out-tangents of the first and last Keyframes are connected to each other for the purposes of editing looped animation.`
->
-> 但是第一个关键帧与最后一个关键帧的切线相互连接，便于编辑循环动画
-
-## Animation Events / 动画事件
-
-> `U3D Document : Animation Events call methods in MonoBehaviour scripts. In order for an Animation Event to call a method from a script, the script must be attached to the same GameObject as the Animator component through which the Animation Clip is playing.`
->
-> 动画事件调用 MonoBehaviour 脚本下的方法，为了保证事件能够调用到脚本中的方法，该方法必须被附加同一个游戏对象上
 
 # Model-Specific Animation / 模型动画
 
@@ -253,7 +247,9 @@
 
 - Custom Properties / 定制属性
 
-## Cutting Imported Animation Clips / 剪切动画切片
+## Animation-Specific Import Settings / 切片导入设置
+
+### Cutting Imported Animation Clips / 剪切动画切片
 
 > `U3D Document : You’ll use animation-specific settings to cut an imported Animation Clip. One of the most common uses for cutting animation is using motion capture (or mocap) data, but it can be used to adjust any imported animation. `
 >
@@ -404,6 +400,20 @@
   > 3. Generic
   > 4. Humaniod
 
+  **Humaniod Animation Type / 人形动画类型**
+
+  > `1. The model has animations that are intended to be played through another Humanoid model with a different hierarchical structure.`
+  >
+  > 当本模型动画的用途为被不同层级结构下的人形模型使用时，需要将模型动画类型设置为 Humaniod
+  >
+  > `2. You’re using the model to play animations that are from Humanoid models with a different hierarchical structure.`
+  >
+  > 当本模型的动画使用的是不同层级结构下其他模型的动画时，需要将模型动画类型设置为 Humaniod
+  >
+  > `3. You want to use the built-in Humanoid features, such as arm and leg IK or target matching.`
+  >
+  > 当使用内置人形功能时，需要将模型动画类型设置为 Humaniod
+
 - Avatar Definition / Avatar 定义
 
   > `U3D Document : Avatars are an asset representation of the model’s Rig. They take different forms depending on whether the Rig is Generic or Humanoid.`
@@ -432,7 +442,7 @@
   >
   > 通过 Expose Extra Transforms 选项可以选择保留某些游戏对象而不被优化移除
 
-- Avatar Masks / Avatar 遮罩
+- Generic Avatar Masks / Avatar 遮罩
 
   > `U3D Document : Avatar Masks are a way of preventing animation data from being written to its binding. `
   >
@@ -448,14 +458,182 @@
 
 ## Configuring Humaniod Rigs / 配置 Humaniod Rig
 
-> 
+> `U3D Document : The core difference between Generic Rigs and Humanoid Rigs is their Avatars. Humanoid Rigs require Avatars to play their animations, which is not the case for Generic Rigs. This is because Humanoids are a special case; their Transform hierarchy is mapped to the bones of a human-like shape.`
+>
+> Humanoid Rigs 区别于 Generic Rigs 的点就是 Humanoid Avatars，Humanoid Rigs 要求由 Humanoid Avatars 播放动画，人形模型的 Transform 被映射到 human-like shape 上的骨骼
 
+### Animation Playback Process / 人形动画播放过程
 
+> `U3D Document : Under normal circumstances, in order for an animation to be shared among multiple targets, each target must have an identical hierarchy with identical names to those on the Animation Clip. This is because the names of Transforms are used to construct the bindings of an Animation Clip. If the hierarchy through which an Animation Clip is being played doesn’t have a specific binding, the binding is just ignored. This means that if the names don’t match, the animation won’t play.`
+>
+> 标准绑定方式 : 要实现动画切片在不同对象下的共享，需要使播放该切片的游戏对象群具有与动画切片相同的名称层级结构 (因为切片就是通过名称来建立的绑定)，即需要具有动画切片绑定要求的字段，如果没有该字段，绑定无法建立，则动画播放时将忽略这些绑定
+>
+> `U3D Document : When an imported model is a Humanoid, its Animation Clips are no longer played using just standard bindings. Instead, the parts of the Animation Clips that match the Humanoid definition are played through the Avatar. `
+>
+> Humanoid 动画绑定 : 当导入的模型为 Humanoid 时，将不再使用标准建立切片名称与对象动画化字段的直接绑定，而是先建立与 Avatar 的 Mapping/绑定，最后由 Avatar 将值写入到对象的字段上，完成动画的播放
+>
+> `U3D Document : At import time, Animation Clips from Humanoid models are converted from writing to Transforms directly to writing to Muscles instead. These are called Muscle Clips. At runtime, Muscle Clips are converted back to write to Transforms. `
+>
+> Humanoid 动画绑定 : 在导入时，会将人形模型的动画切片作转换，使绑定由 与对象字段的直接绑定 转换为 与肌肉 的绑定，转换后形成 Muscle Clips，再将值 写入到 / 绑定 到对象的动画化字段上
+>
+> `U3D Document : Because all humanoids have this mapping, any Humanoid Animation Clip can be played through any Humanoid model.`
+>
+> 所有 humanoids 具有该映射(肌肉绑定)，因此该动画切片可以被所有人形模型共享
+
+On import : Animation Clip with Transform bindings → Humanoid Avatar → Muscle Clip
+
+At runtime : Muscle Clip → Humanoid Avatar → set Transform properties
+
+### Avatar configuration / Avatar 配置
+
+#### Mapping / 绑定
+
+> `U3D Document : The mapping defines exactly which of the model’s Transforms is linked to which of the pre-defined Humanoid bones.`
+>
+> 定义模型的 Transforms 具体绑定到 Avatar 哪一个预定义的人形骨骼上
+>
+> `U3D Document : Each dot on the diagram refers to a bone. If the dot has a solid outline then the bone is required in order for the mapping to work. If the dot has a dotted outline, the bone is optional. The more optional bones you map, the higher the quality of the retargeting.`
+>
+> human-like shape 上的每一个点代表骨骼，实心代表必须建立人形模型与该骨骼的映射，非实心表示可选，可选骨骼越多，重定向质量越高
+
+- Automap 自动完成骨骼的映射
+
+- Animation Pose / 标准姿势
+
+  > `U3D Document : They form a reference pose from which animations are measured. Each rotation and translation in an animation is compared to this reference pose when it’s converted to and from a Muscle Clip. Because this pose is so important, Unity uses a standard animation pose as the target all humanoid models should aim for: the T-pose.`
+  >
+  > Avatar 中每个 Transforms 将具有旋转与位置属性，他们将形成一个参考姿势，这些属性在进行 Avatar <--> Muscle Clip 之间的转换时会被参考，因此 Unity 使用 T-pose 作为默认参考姿势，建议在 Mapping 时将 pose 强制为 T-pose
+
+#### Muscles & Settings / 肌肉设置
+
+> `U3D Document : Muscle definitions exist as a range within or beyond which a bone is expected to rotate on a given axis. `
+>
+> 肌肉以范围的形式存在，代表骨骼绕指定轴可旋转的范围
+
+- Normalised Range / 统一化范围
+
+  > `U3D Document : This range is normalised, which means that rotations at one end of the range would have a value of 0 and rotations at the other end of the range would have a value of 1.`
+  >
+  > 标准的范围为 [0,1]
+  >
+  > `U3D Document : Transform rotations are converted into these normalised rotation ranges at import time. The normalised rotation ranges are then converted back into Transform rotations at runtime.`
+  >
+  > Muscle 将于 导入时 转换为 Normalised Range 统一范围，运行时再进一步根据具体 Muscle 范围定义转换为 Transform rotations 具体旋转，这样可以方便于重定向，因为不同人形模型的 Muscle 范围定义可能不同，当动画某一帧要求旋转指定角度时，需要先参照 Avatar 的 Muscle 的标准范围，再进一步转换为实际 Transform rotations
+
+#### Humanoid Avatar Masks / Avatar 遮罩
+
+> `U3D Document : Avatar Masks are a way of preventing animation data from being written to its binding. `
+>
+> Avatar Masks 可以用于防止动画数据的值被写入到绑定
+>
+> `U3D Document : Transform data is not used from sources that have been masked.`
+>
+> 变换数据将不会被写入到被遮罩的源
+>
+> `注意:`
+>
+> 1. It’s important to remember that Avatar Masks only mask Transform data. They do not mask data on the same GameObject as a masked Transform.
+
+# Animation Windows / 动画窗口
+
+## Keyframes / 关键帧
+
+> `U3D Document : These keyframes hold information on the value of the Animation Curve at a specific time, as well as how to interpolate the values in-between.`
+>
+> 关键帧记录有曲线在特定时间下的特定值，以及在两值之间插值的方式
+
+## Keyframes Tangents / 关键帧切线
+
+> `U3D Document : The value of an Animation Curve at any given time is the interpolation between the previous and next Keyframe. The exact value of this interpolation is calculated using the tangents of the Keyframes.`
+>
+> 关键帧切线可以用于计算两关键帧之间任意时刻的插值
+>
+> `U3D Document : Each Keyframe has two tangents: An in-tangent (on the left), An out-tangent (on the right)`
+>
+> 每个关键帧有两个切线，一个为内切线(左侧)，一个为外切线(右侧)
+>
+> `U3D Document : The exceptions to this are the first and last keyframes: the in- and out-tangents of the first and last Keyframes are connected to each other for the purposes of editing looped animation.`
+>
+> 但是第一个关键帧与最后一个关键帧的切线相互连接，便于编辑循环动画
+
+## Animation Events / 动画事件
+
+> `U3D Document : Animation Events call methods in MonoBehaviour scripts. In order for an Animation Event to call a method from a script, the script must be attached to the same GameObject as the Animator component through which the Animation Clip is playing.`
+>
+> 动画事件调用 MonoBehaviour 脚本下的方法，为了保证事件能够调用到脚本中的方法，该方法必须被附加同一个游戏对象上
+
+# Animator Component / 动画器组件
+
+## Animator Parameters / 动画参数
+
+> `U3D Document : Examples of what the Parameter data can be used for include: `
+> `1. Defining Transition conditions`
+> `2. Controlling state properties`
+> `3. Controlling Blend Trees`
+>
+> 动画参数可以用于定义转换条件，控制状态的属性，控制混合树
+
+- Floats
+
+- Integers
+
+- Booleans
+
+- Triggers / 触发器类型
+
+  > `U3D Document : Trigger Parameters are exclusively used to start Transitions. `
+  >
+  > 触发器参数专门用于启动某种过渡
+
+## Animator Component Properties / Animator 属性
+
+- Avatar Setting
+
+  > `U3D Document : The Avatar setting of the Animator component is optional, unless you’re animating a character with a Humanoid rig.`
+  >
+  > 只有具有 humaniod rig 的角色需要设置 Avatar 
+
+- Apply Root Motion
+
+  > `U3D Document : The Apply Root Motion setting determines whether or not any change to the Position or Rotation of the Root node will be applied.`
+  >
+  > 该设置在于动画中对根节点位置与旋转的更改是否应用到场景中
+
+- Update Mode / 更新模式
+
+  > `U3D Document : The Update Mode of an Animator component affects when the code of the Animator is executed to update the properties it controls.  `
+  >
+  > 该模式在于控制 更新其控制的动画化属性的时机
+  >
+  > 1. Normal (In time with the render system between the Update and LateUpdate method calls)
+  > 2. Animate Physics (In time with the physics system after the FixedUpdate method call.)
+  > 3. Unscaled Time (In time with the render system, but is not affected by Time.timeScale. This means that the speed of the animation will not change. )
+
+- Culling Mode / 剔除模式
+
+  > `U3D Document : This setting affects what can cause the Animator to pause its updates for efficiency.  `
+  >
+  > 剔除模式控制为效率而暂停动画的方式
+  >
+  > 1. Always Animate 不剔除
+  > 2. Cull Update Transforms 只要 Animator 下的渲染器边界位于渲染器之外，则停止该Animator的动画，但是仍保留根运动
+  > 3. Cull Completely 只要 Animator 下的渲染器边界位于渲染器之外，则停止该Animator的动画以及根运动
+
+  
 
 -------
 
 **Question :** 
 
 - Avatar Masks 的具体设置不是很理解
+- You want to use the built-in Humanoid features, such as arm and leg IK or target matching. 谁使用内置人形功能？人形功能是什么样的功能？
+- Normalised Range 与 Transform rotations 的转换
+- Controlling state properties 参数的用途2，3
+- Unscaled Time 更新模式 没概念
 
 -------
+
+2022/1/12 15:51
+
+-------
+
