@@ -81,6 +81,10 @@
 
 # Animation Blending / 动画混合
 
+> `U3D Document : Sometimes when a GameObject is playing an animation, you’ll want to change which animation is playing or play another animation at the same time. When multiple animations are played at the same time and through the same GameObject hierarchy, the animations are doing what is called blending. `
+>
+> 动画混合的使用场景为你期望改变游戏对象正在播放的动画或者同时播放多个动画在同一个游戏对象上
+>
 > `U3D Document : When you play more than one Animation Clip at the same time, Unity blends them together. The result of the blend is then applied to the bindings. `
 >
 > 当播放超过一个的动画切片时，Unity会将这些动画混合后应用于绑定
@@ -88,6 +92,52 @@
 > `U3D Document : To blend Animation Clips, each animation has a relative weight. These weights are used to calculate how much influence each individual Animation Clip has on the final animation. `
 >
 > 动画权重的意义在于指出被混合的每一个动画切片对最终动画的影响
+
+## Blending Algorithms / 混合算法
+
+> `U3D Document : All the algorithms follow the same overall process: `
+>
+> `Each animation is given a weight. This weight represents how much the animation affects the result of the blend.`
+>
+> 首先，每个混合的动画切片将具有其混合权重
+>
+> `Higher weights mean the animation will have more of an effect and lower weights mean the animation will have less of an effect. `
+>
+> 该混合权重用于表示该动画切片对混合结果动画的影响，权重值越高，意味着影响越大，混合结果与该动画越接近
+>
+> `Typically, weights are normalized. This means that the sum of the weights for all the animations being blended equals one. `
+>
+> 并且该权重值时规范化的，意味着所有动画切片的权重值之和为1
+
+- Weighted Sum / 加权平均
+
+  > 遍历所有混合切片的绑定，将某时刻下每个动画切片的绑定值与对应切片的动画权重相乘后累加作为该时刻下的混合结果，并将该结果写入到绑定
+
+## Features Using Blending / 混合应用
+
+- Transitions / 过渡
+
+  > `U3D Document : As the Transition continues, the weight of it increases, while the weight of the previous state decreases.`
+  >
+  > 当过渡发生时，过渡前的状态权重降低，过渡后的状态权重增加
+
+- Blending Trees / 混合树
+
+  > `U3D Document : Blend Trees are used in place of a single Animation Clip in a state. They blend the multiple Animation Clips they contain. `
+  >
+  > 混合树可以混合多种动画并作为一种状态参与过渡
+
+- Layer / 动画层
+
+  > `U3D Document : Blending in Layers works slightly differently than with Transitions and Blend Trees. All the animation in a Layer is completely evaluated before it’s then blended with the next Layer. The result of this blend is then evaluated before it is blended with subsequent Layers, and so on. `
+  >
+  > 动画层的混合，在该层与下一动画层混合前，会评估该层的所有动画
+
+## Nested Blending / 混合嵌套
+
+> `U3D Document : Animation blending can be nested. Weighting happens multiplicatively, so each Animation Clip has its weight calculated before the final result is calculated. `
+>
+> 动画混合可以被嵌套，在最终结果被计算之前，每个动画切片将计算其自身权重
 
 ## Animator Controller / 动画控制器
 
@@ -619,7 +669,71 @@ At runtime : Muscle Clip → Humanoid Avatar → set Transform properties
   > 2. Cull Update Transforms 只要 Animator 下的渲染器边界位于渲染器之外，则停止该Animator的动画，但是仍保留根运动
   > 3. Cull Completely 只要 Animator 下的渲染器边界位于渲染器之外，则停止该Animator的动画以及根运动
 
+##  Animator State Settings / 状态设置
+
+- Name and Tag / 名称与标签
+
+  > ` U3D Document : These are both strings that are purely used for identification.`
+  >
+  > 字符串类型用于标识状态身份
+  >
+  > `U3D Document : the Name must be unique but the Tag doesn’t need to be.`
+  >
+  > Name 字符串需要唯一，Tag 字符串不需要唯一
+
+- Motion / 运动
+
+  > 可以为动画切片或者混合树
+
+- Speed and Multiplier / 速度与乘数
+
+  > `U3D Document : You can use the next group of settings to manipulate how the Motion is played. `
+  >
+  > 用于操纵 Motion 的播放速度，Multiplier 可成倍变化，可设置初始值后通过参数调整
+
+- Motion/Normalized Time / 归一化时间
+
+  > `U3D Document : Another way to control how an Animator State plays is by directly controlling its Normalized Time. `
+  >
+  > Normalized Time 仍用于控制状态的播放方式
+  >
+  > `U3D Document : Normalized Time is the concept of having the current time of the Motion being measured between 0 and 1.`
+  >
+  > 归一化时间使用[0,1]来表示播放状态，0时开始播放，1时播放完毕
+
+- Cycle Offset / 周期偏移
+
+  > `U3D Document : This setting works alongside Normalized Time, in that it sets the Normalized Time the State will start playing at. If you want to change this, you can set it to a Float or have it controlled by a Float Parameter.`
+  >
+  > 配合 Motion Time 使用，使用浮点数参数来控制偏移量
   
+- Humanoid Settings - Mirror / 镜像
+  
+  > `U3D Document : Mirror reflects an animation from left to right. `
+  
+- Humanoid Settings - Foot IK / 足部IK
+
+  > `U3D Document : Foot IK uses the Muscle Clip data to estimate when each foot is supposed to be planted on the ground. When using Foot IK, the foot’s position is locked. `
+  >
+  > Foot Ik 用于判定何时哪只脚固定到地面上，此时足部的位置将被锁定，一般用于防止应处于固定态的足部运动
+
+- Additional Settings - Write Defaults / 写入默认值
+
+  > `U3D Document : An Animator gathers all the bindings from all the Animation Clips it contains and writes to each of them every frame.`
+  >
+  > 一个 Animator 将聚集所有动画切片的所有绑定，并且每帧将绑定的值写入对应属性
+  >
+  > `U3D Document : When the Motion of an Animator State doesn’t write to a particular binding, If you enable Write Defaults, the default value of that binding is written to it. If you disable it the binding is not written to, and therefore keeps its previous value.`
+  >
+  > 但是 Animator 状态的绑定未写入时，若勾选该设置，则使用默认值写入绑定，否则，不写入绑定保持原值
+  
+- Additional Settings - List of Transitions / 优先级
+
+  > `U3D Document : The list is the priority order for the Transitions, meaning that their conditions will be checked in the order that’s shown on the list.`
+  >
+  > 可以用于设置状态机中状态过渡的优先级
+
+## State Transitions Settings / 状态过渡设置
 
 -------
 
@@ -630,6 +744,8 @@ At runtime : Muscle Clip → Humanoid Avatar → set Transform properties
 - Normalised Range 与 Transform rotations 的转换
 - Controlling state properties 参数的用途2，3
 - Unscaled Time 更新模式 没概念
+- Layer / 动画层 动画层的混合权重应用 没概念
+- Nested Blending / 绑定嵌套 没概念
 
 -------
 
