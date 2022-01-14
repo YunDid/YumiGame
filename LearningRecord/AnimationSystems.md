@@ -163,13 +163,69 @@
 >
 > Transitions 被用于状态之间的过渡混合
 >
+> `U3D Document : Transitions are a blend between one Animator State and another. `
+>
+> 过渡是状态之间的混合
+>
 > `注意:`
 >
 > 1. 默认 Entry 下的过渡是不可预览的，即没有以下各 Settings
 
+#### Current and Next States / 当前与下一状态
+
+> `U3D Document : When a Transition starts, the Animator State that is being Transitioned to (which is called the **next State**) starts playing. `
+>
+> 当过渡发生时，Next State 开始播放
+>
+> `U3D Document : At this point, the next State has a weight of 0 and the Animation State that is being transitioned from (which is called the current State) has a Weight of 1. `
+>
+> 当过渡发生时，Next State 将获得0的权重，Current State (过渡发生的状态) 将获得1的权重
+>
+> `U3D Document : As the Transition continues, both Animation States continue to play and the Weight of the current State starts reducing as the next State increases linearly. When the Weight of the current State reaches **0** (which will happen at the end of the Transition), it stops playing and the next State becomes the new current State. `
+>
+> 当过渡持续进行时，Current State 的权重不断变小，同时 Next State 的权重线性增加，直至 Current State 权重减小至0，Next State 成为 Current State
+
+#### Transition Settings / 过渡设置
+
+- Multiple Transitions / 多重过渡
+
+  > 可在两个过渡之间重复添加多个过渡，多重过渡具有三个箭头
+
+- Conditions / 条件
+
+  > 条件依附于动画参数而存在，根据判断动画参数的状态的来设置过渡条件
+  >
+  > `U3D Document : When these statements are satisfied, the Transition will start. `
+  >
+  > 当所有条件均满足时才会发生过渡，并且可以设置条件判断的优先级
+
 - Exit Time / 退出时间
 
   > float 类型，表明当前状态播放百分之 n(n为退出时间 * 100) 后开始过渡，若想当前状态至少播放一次完毕后再过渡，该值需要大于1
+  >
+  > `U3D Document : Exit Time is the time at which a Transition starts. This is measured in the Normalized Time of the current state. `
+  >
+  > Exit Time 可控制 Current State 发生过渡的时机，该值通过归一化时间来衡量
+  >
+  > `The Normalized Time on the previous frame is less than the Exit Time.`
+  >
+  > `The Normalized Time on the current frame is greater than the Exit Time.`
+  >
+  > 只有在上一帧状态的归一化时间小于 Exit Time，当前帧的归一化时间大于 Exit Time 时，过渡才会发生
+
+- Transition Duration / 持续时间
+
+  > `U3D Document : To control the length of time a Transition takes.`
+  >
+  > `U3D Document : seconds, if Fixed Duration is enabled`
+  >
+  > `U3D Document : Normalized Time of the current State, if Fixed Duration is disabled `
+  >
+  > 控制过渡持续的时间，可以秒/s或者归一化时间来衡量，取决于 Fixed Duration 是否被选中
+  >
+  > `U3D Document : Transition duration in normalized time from current state`
+  >
+  > 若使用归一化时间，则表示相对于 Current State 的时间
 
 - Transition Offset / 过渡偏移
 
@@ -177,15 +233,161 @@
   >
   > 动画混合时为了使混合更自然，因此被混合的动画应该处于相位态，即上一个动画从50%结束时，下一个动画不能从头开始而应该也从50%处开始播放，这样才能在调整权重之后动画过渡更自然
   >
+  > `U3D Document : The offset is the Normalized Time of the next State at which the State will start playing when the Transition occurs. `
+  >
+  > 过渡偏移是相对于 Next State 的归一化时间，用于设置过渡发生时 Next State 的播放内容，或者说过渡发生时，Next State 的播放起始点
+  >
   > `注意:`
   >
   > 1. 偏移时间应该根据退出时间而定，自上一动画的退出时间点来设置下一动画的偏移量
+  
+- Transition Interruption / 过渡中断
 
---------
+  > `U3D Document : Transitions can be interrupted by other Transitions. When this happens, the values for the animation at the current frame of the Transition are stored and act as the current State for the interrupting Transition.`
+  >
+  > 当前过渡可以被其他过渡中断，当中断过渡发生时，将保存当前帧下属性在当前过渡下的值，并作为中断过渡的 Current State
+  >
+  > `U3D Document : This means that the blend for the interrupting Transition happens between a single time on the original Transition and the interrupting Transition’s next State. `
+  >
+  > 这意味着中断类型的过渡发生于 Current Transition 的中断点 与 Interrupting Transition 的 Next State 之间，而不是 Current State 与 Next State 之间
+  >
+  > `注意:`
+  >
+  > 1. 默认情况下过渡在发生时是不允许中断的，需要通过下列设置手动触发该机制
+
+- Interruption Source / 中断源
+
+  > `U3D Document : Animator Controllers maintain a list of Transitions that can currently be taken for each Animation Layer. These Transitions have their Conditions and Exit Time checked each frame. By default, this list only contains Transitions from the Any State followed by the current State’s Transition list.`
+  >
+  > Animator Controllers 将维护一个 Transitions 列表，区别于每个状态下的 Orderable Transitions 列表，该列表每一帧都会检查列表下所有过渡的条件与退出时间，以便可作为源进行 Transition Interruption，该列表默认情况下仅包含任何状态的转换与当前状态下的转换
+  >
+  > `U3D Document : However, when an Animation Layer is transitioning, this list of Transitions is replaced by the Transitions from the Any State and whatever additional Transitions are defined by the Interruption Source of the current Transition. `
+  >
+  > Transitions 列表中的过渡发生时，其可以被其他过渡所取代，这取决于 Interruption Source 选中的源，非 None 的情况下会将选中源的 Orderable Transitions 添加至 Transitions 列表中，用于 Transition Interruption
+
+- Ordered Interruption / 有序中断
+
+  > `U3D Document : Ordered Interruption controls whether Transitions of lower priority on the current State can interrupt the Transition. If this property is enabled, Transitions of lower priority on the current State cannot interrupt the Transition because of their lower order.`
+  >
+  > 该选项用于控制低优先级的过渡是否可以中断 Current Transition ，若被选中，则低优先级的不允许中断 Current Transition
+
+- Any State / 任何状态
+
+  > `U3D Document : Each layer in an Animator Controller has a special node called Any State. This node allows Transitions to be made from it but not to it, so that no matter what State is currently playing, a Transition can happen. `
+  >
+  > Animator Controller 的每一动画层下均有一个 Any State 状态，该状态可以过渡至任何状态，但是不允许其他状态过渡至该状态，Any State 状态即使未播放，其下的过渡仍可以发生
+  >
+  > `U3D Document : The Any State node appears in all State machines for convenience, but it only has a single list of Transitions. Each instance of the Any State node in an Animation Layer is the same one.`
+  >
+  > 每个状态机下均存在 Any State，但是 Any State 仅会有一个实例，即每个动画层下的 Any State 使用同一个 Transitions List
+  >
+  > `U3D Document : In each frame, the Animator Controller checks a list of Transitions to see whether any of them should start. It checks them in order, starting with all the Transitions from the Any State node and then all the Transitions from the current State. `
+  >
+  > Animator Controller 每一帧均会检查该 Transitions List，检查该列表下的所有过渡是否应该发生，此过渡源为 Any State，终点为 Current State
+  >
+  > `注意:`
+  >
+  > 1. Any State 下的过渡时逐帧检查的，使用时需要注意该条件
+
+### State Machines / 状态机
+
+> `U3D Document : State Machines are purely an organisational tool. State Machines allow you to group States and Transitions together`
+>
+> 状态机仅仅是一种状态与过渡组织管理工具，处理复杂动画时很有用
+>
+> `U3D Document : Each Animator Controller has one or more Animator Layers (or Layers), and each Animator Layer contains a State Machine. However, any State Machine may also have additional State Machines nested within it. `
+>
+> 每个 Animator Controller 将由一个或多个 Layers，而每个动画层将包含一个状态机，状态机还可以有附加的子状态机
+
+#### State Machine Transitions / 状态机过渡
+
+> 可以由外部状态 <-> 状态机，也可以外部状态 <->状态机内部状态，还可以状态机内部状态 <-> 状态机
+
+- Entry Node and Exit Node / 进入与退出状态
+
+  > `U3D Document : The Entry and Exit nodes are used for Transitions to/from the State Machine itself. `
+  >
+  > 仅用于进入与退出子状态机状态本身
+
+- Up Node / Up状态
+
+  > `U3D Document : The Up node represents a direct Transition between the internal and external nodes. `
+  >
+  > Up Node 用于子状态机内部与外部状态的直接转换
+
+### Animator Layers / 动画层
+
+> `U3D Document : Animator Layers are a way of playing multiple animations at the same time and blending the result.`
+>
+> 动画层也是一种同时播放多种动画并混合结果的一种方式
+>
+> `1. The blending overrides what’s happening on other Animator Layers.`
+>
+> 一种混合方式是覆盖至其他动画层播放的动画上
+>
+> `2. The blending adds to what is happening on other Animator Layers.`
+>
+> 一种混合方式是附加到其他动画层播放的动画上
+
+- Animator Layer indices / 索引
+
+  > `U3D Document : The base Layer has an index of 0 and all subsequent Layers have indices incrementing from there.`
+  >
+  > Base Layer 使用0索引，其余动画层以此递增
+  >
+  > `U3D Document : Animator Layers are evaluated in ascending index order, starting with 0.`
+  >
+  > 动画层将按索引顺序被计算/评估，自0索引开始计算
+
+- Animator Layer weights / 权重
+
+  > `U3D Document : Each Animator Layer has a weight that determines its contribution to the final result. `
+  >
+  > 每个动画层均具有权重用于表示其对混合结果的影响程度
+
+#### Animator Layer Blending / Layer 混合
+
+> 动画层的计算将按索引顺序计算评估，因此会先计算 Layer0 的动画，之后计算 Layer1 的动画并与 Layer0 混合
+>
+> 混合方式 : 1. 计算当前动画层的动画 2. 与之前 Layer 动画混合结果进行混合
+
+- Mask / 遮罩
+
+  > `U3D Document : When you’re working on a transform animation or humanoid animation, it can often be useful to only animate part of a skeleton at once.`
+  >
+  > 一般使用人形动画时可能会使用遮罩，使得某些骨骼不受某些动画的影响，该动画控制的绑定将不会写入到设定的骨骼中，骨骼设定取决于 Avatar Mask
+
+- Override Blending / 覆盖
+
+  > `U3D Document : Override blending is similar to the blending used by Transitions and 1D Blend Trees. As the contribution from the next Animator Layer increases, the contribution from the previous  Animator Layers decreases. `
+  >
+  > 覆盖混合类型类似于过渡混合于1D混合树混合，当前动画层权重增加时，之前混合结果的权重将降低
+  >
+  > `U3D Document : The weight of the previous Animator Layers is equal to the inverse of the overriding (next) Animator Layer.`
+  >
+  > 当前动画层权重与之前混合动画结果权重的关系与相反，即相加为1
+
+- Additive Blending / 附加
+
+  > `U3D Document : This is used to support additive animation. Additive animation is when the animation itself is stored as a delta (or change) from a reference pose.`
+  >
+  > 附加动画将以相对与参考姿势的增量形式存储
+  >
+  > `U3D Document : When you use Additive blending, the already evaluated Animator Layers always have an effective weight of 1. Any animation from the Additive Animator Layer is added to the contribution from those Layers. The animation data is taken as a delta (or change) between a default value and its current value to calculate the weighted contribution. `
+  >
+  > 当使用附加绑定类型时，以评估的混合结果将始终具有1的权重，而任何来自 Additive Layer 层的动画数据将以增量形式存储并附加于之前的混合动画中
+  >
+  > `注意:`
+  >
+  > 1. 若将未设置附加动画参考姿势的切片所在的 Layer 设置为使用附加绑定类型，则可能导致不期望的结果
 
 **Questions: **
 
 - ~~动画切片的组成 - 绑定是什么概念？一对一绑定是什么东西？~~
+- Multiple Transitions / 多重过渡 时所有条件均满足？还是满足其一？
+- 多个过渡条件时全部满足时才发生过渡？
+-  Current Transition 是用来指定中断过渡的源的？
+-  状态机之间的过渡，是如何混合的？
 
 --------
 
@@ -395,7 +597,7 @@
 >
 > `2. Select the frame number that should serve as the reference pose.`
 >
-> 创建 Additive Animation 的方式是先勾选附加选项，然后选择作为参考姿势的帧
+> 创建 Additive Animation 的方式是先勾选附加选项，然后选择作为参考姿势的帧，该帧上的值将被作为默认值，之后附加的动画将以此为参考进行增量式存储
 
 #### Curves / 曲线
 
@@ -746,6 +948,7 @@ At runtime : Muscle Clip → Humanoid Avatar → set Transform properties
 - Unscaled Time 更新模式 没概念
 - Layer / 动画层 动画层的混合权重应用 没概念
 - Nested Blending / 绑定嵌套 没概念
+- 过渡完成时 Current State 是否具有1的权重，当下一过渡发生时，才会具有1的权重？
 
 -------
 
