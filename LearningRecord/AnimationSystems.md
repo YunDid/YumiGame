@@ -381,13 +381,41 @@
   >
   > 1. 若将未设置附加动画参考姿势的切片所在的 Layer 设置为使用附加绑定类型，则可能导致不期望的结果
 
+#### Sync and IK Pass / 同步与IK
+
+- Sync / 同步
+
+> `U3D Document : This will create an identical State Machine to the one on the source Animator Layer. `
+>
+> 同步将创建一个与源动画层完全相同的状态机
+>
+> `U3D Document : By default, the State Machine will match the timing of the source State Machine. This means that when Transitions happen in the source Animator Layer, they will also happen in the synced Animator Layer. `
+>
+> 默认情况下，同步层与原动画层的状态机时间将匹配，即状态机管理下的过渡发生时机将相同
+>
+> `U3D Document : However, if Timing is enabled, State durations will be an interpolation of the source Animator Layer’s Animation Clip length and the synced Animator Layer’s Animation Clip length. They will be based on the weight of the synced Animator Layer. `
+>
+> 若选中 Timing，则状态的持续时间将不再与原动画层状态相同，而是根据同步层的权重，对源动画层切片持续时间与同步层切片持续时间进行插值，使用此插值作为同步层切片持续时间
+
+- IK Pass
+
+  > `U3D Document : This setting is just for humanoid animation. `
+  >
+  > 仅适用于具有IK系统的人形动画
+  >
+  > `U3D Document : If it’s enabled, it will cause methods for evaluating IK to be called on MonoBehaviours on the same GameObject as the Animator component, as well in State Machine behaviours for this Animator Layer. `
+  >
+  > 若其被选中，则造成 MonoBehaviours 脚本与 State Machine behaviours 状态机行为中的IK评估方法被调用
+
+--------
+
 **Questions: **
 
 - ~~动画切片的组成 - 绑定是什么概念？一对一绑定是什么东西？~~
 - Multiple Transitions / 多重过渡 时所有条件均满足？还是满足其一？
 - 多个过渡条件时全部满足时才发生过渡？
 -  Current Transition 是用来指定中断过渡的源的？
--  状态机之间的过渡，是如何混合的？？
+- 状态机之间的过渡，是如何混合的？？
 
 --------
 
@@ -857,8 +885,8 @@ At runtime : Muscle Clip → Humanoid Avatar → set Transform properties
   >
   > 该模式在于控制 更新其控制的动画化属性的时机
   >
-  > 1. Normal (In time with the render system between the Update and LateUpdate method calls)
-  > 2. Animate Physics (In time with the physics system after the FixedUpdate method call.)
+  > 1. Normal (In time with the render system between the Update and LateUpdate method calls. )
+  > 2. Animate Physics (In time with the physics system after the FixedUpdate method call. )
   > 3. Unscaled Time (In time with the render system, but is not affected by Time.timeScale. This means that the speed of the animation will not change. )
 
 - Culling Mode / 剔除模式
@@ -956,3 +984,310 @@ At runtime : Muscle Clip → Humanoid Avatar → set Transform properties
 
 -------
 
+# General Animation Scripting / 通用动画脚本
+
+> `U3D Document : Most of the scripting discussed here is for methods found on the Animator component. Finding a reference to the Animator component is an assumed step before using any of these methods.`
+>
+> 动画脚本基于 Animator 组件，因此在获取 Animator 属性前，需要先获取 Animator 组件的引用
+
+### Controlling Animator Parameter Values / 控制动画参数值
+
+> `U3D Document : One of the most common reasons you might need to get the value of an Animator parameter is if it’s not being set by script but instead by an imported animation.`
+>
+> 一般获取动画参数的原因不在于获取通过脚本设置的参数值，而是通过导入模型设置的参数值
+>
+> `U3D Document : Imported animations have the option to use additional Animation Curves, and each of these additional Animation Curves must have a name. If this name is the same as a float Animator Parameter, then while the animation is being evaluated the parameter will have its value set to that of the Animation Curve. `
+>
+> 因为导入模型附加有动画曲线，该曲线仍具有名称，若该名称与动画参数同名，那么参数的值该跟随曲线而变化
+>
+> `U3D Document : These Animation Curves are subject to weighting, so if two animations are being blended, the value of the Animator Parameter will be a blend between its values for each animation.`
+>
+> 由于动画曲线具有混合权重，因此混合时动画参数也将被混合
+
+```c# 
+using UnityEngine;
+public class SetParametersExample : MonoBehaviour
+{
+   public Animator animator;
+   // 一般使用动画参数名称的哈希值来作函数参数，防止同名混淆
+   // Animator.StringToHash(string) 获取string的哈希值
+   static readonly int speedParameterHash = Animator.StringToHash("Speed");
+   void Update()
+   {
+       //animator.SetBool(string name, Bool value) / animator.GetBool(string name)
+	//animator.SetFloat(...) / animator.GetFloat(...)
+	   //animator.SetInteger(...) / animator.GetInteger(...)
+	//animator.SetTrigger(...) / animator.GetTrigger(...)
+       //string 参数可使用 int 类型的哈希值代替
+       animator.SetFloat(speedParameterHash, 5f);
+   }
+}
+```
+
+### Controlling Animator Layer Weights / 控制动画层权重
+
+```c# 
+animator.SetLayerWeight()
+float shootingLayerWeight = animator.GetLayerWeight (2);
+```
+
+### Flow Control / 流程控制
+
+> `U3D Document : Although one of the main jobs of Animator Parameters is to control Transitions, sometimes you might prefer to take control of the flow of animations that play more individually.`
+>
+> 较于通过动画参数控制过渡，可以通过某些方法直接控制播放的动画
+
+- Play and PlayInFixedTime
+
+  > `U3D Document : Play a State of a given name. They just do it slightly differently. `
+  >
+  > 播放指定名称下的状态
+  >
+  > `注意:`
+  >
+  > 1. 两者区别仅在于第三个参数，Play 为归一化的时间，PlayInFixedTime 为秒
+
+```c# 
+using UnityEngine;
+
+public class FlowControlExample : MonoBehaviour
+{
+    public Animator animator;
+
+    static readonly int shootStateHash = Animator.StringToHash("Shoot");
+    static readonly int walkStateHash = Animator.StringToHash("Walk");
+
+    void Start()
+    {
+        animator.Play("Run", 0, 0.1f);
+    }
+
+    void Update()
+    {
+        /*
+            Parameters:
+                string/int : 指定待播放状态的名称/名称哈希值
+                int : 指定待播放状态所在动画层的索引
+                float : 指定待播放状态的播放时机，以 Current 状态为基准
+        */
+        if(Input.GetKeyDown(KeyCode.Space))
+            animator.PlayInFixedTime(shootStateHash, 1, 0f);
+        
+        if(Input.GetKeyDown(KeyCode.LeftShift))
+            animator.Play(walkStateHash, 0.5f);
+    }
+}
+```
+
+- CrossFade and CrossFadeInFixedTime
+
+  > `U3D Document : It works more like Transitions.`
+  >
+  > 目前认为该方法用于创建无条件临时过渡
+
+```c# 
+using UnityEngine;
+
+public class FlowControlExample : MonoBehaviour
+{
+    public Animator animator;
+
+    static readonly int shootStateHash = Animator.StringToHash("Shoot");
+    static readonly int walkStateHash = Animator.StringToHash("Walk");
+
+    void Start()
+    {
+        animator.Play("Run", 0, 0.1f);
+    }
+
+    void Update()
+    {
+        /*
+            Parameters:
+                string / int : The name of the State to be cross faded to (as either a string or a hash of the State’s name)
+                float : How long the fade should take / 过渡持续时间
+                int : The index of the Layer of the State being cross-faded to / 动画层索引
+                float : The offset through the State being transitioned to / Next 状态的偏移量
+                float : The time through the fade to start at / 此参数必须为归一化时间
+        */
+
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+            animator.CrossFade(walkStateHash, 1f, 0, 0.1f, 0f);
+    }
+}
+
+```
+
+### MonoBehaviour Messages / 消息
+
+- OnAnimatorMove()
+
+  > `U3D Document : However, if a MonoBehaviour calls the OnAnimatorMove method, then it controls the Root Motion. `
+  >
+  > OnAnimatorMove 可以用于控制根运动，可以调用 animator.deltaPosition，animator.deltaRotation 来完成对根运动的设置
+  >
+  > `U3D Document : An empty OnAnimatorMove method will make an Animator behave as though it has no Root Motion. `
+  >
+  > 若该方法为空，则 Animator 无根运动
+
+- Update Mode / 更新模式
+
+  > Normal : Update() -> OnAnimatorMove() -> OnAnimatorIK() -> LateUpdate()
+  >
+  > Animate Physics : FixedUpdate() -> OnAnimatorMove() -> Internal Update(物理系统内置更新用于检测碰撞) -> OnAnimatorIK()
+
+### State and Animation Clip Information / 获取状态与切片信息
+
+- animator.IsInTransition(...)
+
+  > 可获取某一动画层是否处于过渡状态
+
+- animator.GetCurrentAnimatorStateInfo(...) / animator.GetNextAnimatorStateInfo(...)
+
+  > 可获取某动画层当前状态以及下一状态的信息，若无下一状态，则返回默认值
+
+- AnimatorStateInfo 结构
+
+  > `U3D Document : It contains concise information about the State such as: Length，Hashes for the name and tag，Speed." `
+  >
+  > 其包含状态的某些信息，如状态长度，名称的哈希值，播放速度等
+
+- animator.GetCurrentAnimatorClipInfo(...) / animator.GetNextAnimatorClipInfo(...)
+
+  > `U3D Document : They both have an index parameter for the Animator Layer, but instead return an array of AnimatorClipInfos. `
+  >
+  > 获取某动画层的所有状态信息，返回 AnimatorClipInfos 数组
+
+- AnimatorClipInfos 结构
+
+  > `U3D Document : These are structs with a reference to the Animation Clip being played and its Weight. This Weight is the blending weight, meaning it takes both Blend Trees and Transitions into account. It does not take the weights of Animator Layers into account.`
+  >
+  > AnimatorClipInfos 结构存放着动画切片的引用以及其权重，同时考虑了混合树与过渡的权重，但是 Layer 权重不考虑在内
+
+# Humanoid-Specific Animation Scripting / 人形动画脚本
+
+## Target Matching and IK / 目标匹配与IK
+
+> `U3D Document : However, sometimes you might want to set the position or rotation of a bone near the bottom of the hierarchy (called the effector) separately. In this case, the rest of the hierarchy needs to change to accommodate the effector’s position or rotation. `
+>
+> 可以通过目标匹配或IK，完成更改效应器(骨骼链末端骨骼)的位置与旋转，进而更新骨骼链其余上级骨骼来适应效应器的变换
+
+### Target Matching / 目标匹配
+
+> `U3D Document : Target matching moves the root of the hierarchy so that the effector is in the correct position or rotation without changing the rest of the hierarchy. `
+>
+> 目标匹配仅改变骨骼层级中根节点的位置与旋转来使效应器处于正确的位置与旋转，而不改变其余骨骼的位置与旋转
+
+- animator.MatchTarget(...)
+
+  > `U3D Document : Target matching is done using the MatchTarget method of the Animator Controller. The method should be called once during the State where you wish to target-match at any time before you want the matching to start. `
+  >
+  > 目标匹配通过 Animator 组件的 MatchTarget 方法完成，需要在某一状态播放下的某个时间点调用 MatchTarget 方法，启动匹配
+  >
+  > `U3D Document : The parameters for the MatchTarget method can be split into three groups, with two parameters each.`
+  >
+  > 该方法有三组参数，分别为 Target Information ，Effector Information ，Information about when the target matching should happen.
+  
+- Target Information / 目标信息
+
+  > `U3D Document : The target information parameters are simply the world-space position to be matched and the world space rotation to be matched.`
+  >
+  > 匹配目标的全局位置与全局旋转
+
+- Effector Information / 效应器信息
+
+  > **AvatarTarget**
+  >
+  > `U3D Document : The first of the effector information parameters is an enumeration to determine which body part is the effector. `
+  >
+  > AvatarTarget 用来定义 Humaniod Avatar 哪一个身体部位用作效应器进行匹配，为枚举类型(Root，Body，LeftFoot，RightFoot，LeftHand，RightHand)
+  >
+  > **MatchTargetWeightMask**
+  >
+  > `U3D Document : The second of the effector information parameters is a struct called MatchTargetWeightMask. It determines what balance of the original position and the target position the effector should take. `
+  >
+  > MatchTargetWeightMask 为一种结构体，定义了原始位置与目标位置应该采取的平衡，其构造函数需要具有两个参数
+  >
+  > MatchTargetWeightMask(Vector3 _1,float _2) 
+  >
+  > _1 : The positional weight (called positionXYZWeight) is a Vector3 that should have a value between 0 and 1 for each axis to control how much the effector should use that axis of the target position. / 浮点值类型用于规定效应器应使用多少目标位置的轴
+  >
+  > _2 : The rotational weight (called rotationWeight) is a float allowing for linear interpolation between the original rotation and the target rotation. / 原始旋转与目标旋转的插值
+  >
+  > 注意:
+  >
+  > 1. Root 枚举代表身体的质心
+
+- Information about when the target matching should happen / 时间参数
+
+  > `U3D Document : The final two parameters are floats giving the Normalized Time of the State. They are when the target matching should start and when it should reach the target.`
+  >
+  > 归一化的时间类型，表示发生目标匹配的时间与其匹配到目标的时间
+
+```c# 
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class VaultTargetMatching : MonoBehaviour
+{
+    public Animator animator;
+    public Transform wallHandPosition;
+    public float takeOffTime = 0.027f;
+    public float handDownTime = 0.371f;
+
+    void Update()
+    {
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Vault"))
+        {
+            MatchTargetWeightMask mask = new MatchTargetWeightMask(Vector3.one, 0f);
+            animator.MatchTarget(wallHandPosition.position, wallHandPosition.rotation, AvatarTarget.LeftHand, mask, takeOffTime, handDownTime);
+        }
+    }
+}
+```
+
+## Inverse Kinematics / IK
+
+> `U3D Document : IK doesn’t move the root of the hierarchy, but it does change the pose of the character. There are many different algorithms used for IK, but what they all have in common is that they set the position or rotation of bones further up the hierarchy so that the effector is at its desired position or rotation. `
+>
+> IK 不同于目标匹配，IK 不改变根节点的位置与旋转，而是设置层级中上一骨骼的以便效应器能处于期望的位置与旋转
+>
+> `U3D Document : There are three important variables that are used with the two-bone inverse kinematics (IK) algorithm that the animator uses: The target position，The target rotation，The hint position.`
+>
+> 双关节IK算法需要知道三个重要参数 The target position，The target rotation，The hint position.
+>
+> `U3D Document : The target position and rotation are the position and rotation that the hand or foot will try to reach. The hint position is the position that the elbow or knee for that limb will try to reach. `
+>
+> 目标位置与目标旋转为手或者足部想要到达的位置和旋转，提示位置为肘或膝盖想要到达的位置
+>
+> `注意:`
+>
+> 1. The target position，The target rotation，The hint position 均有其权重，可以获取并设置 IK 相应状态与权重
+
+## MonoBehaviour Messages / 消息
+
+-  OnAnimatorIK(...)
+
+  > `U3D Document : OnAnimatorIK is called once per update for every Animator Layer which has its IK Pass enabled. Each call has the Layer’s index passed as a parameter. This means you can deal with various uses of IK separately. `
+  >
+  > OnAnimatorIK 将在动画层 IK Pass 选中的情况下，每更新一次调用一次
+
+- Update Mode / 更新模式
+
+  > Normal : Update() -> OnAnimatorMove() -> OnAnimatorIK() -> LateUpdate()
+  >
+  > Animate Physics : FixedUpdate() -> OnAnimatorMove() -> Internal Update(物理系统内置更新用于检测碰撞) -> OnAnimatorIK()
+
+--------
+**Question :** 
+
+- Play and PlayInFixedTime 执行时是不是强制需要具有当前状态到某个状态的过渡？
+- CrossFade 不就相当于设置了一个过渡？
+- Information about when the target matching should happen / 时间参数 到达目标的时间？是怎么界定的？
+- MatchTargetWeightMask 结构构造函数不清楚
+
+--------
+
+2022/1/17 21:36
