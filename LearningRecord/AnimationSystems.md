@@ -967,7 +967,7 @@ At runtime : Muscle Clip → Humanoid Avatar → set Transform properties
 
 -------
 
-**Question :** 
+**Questions :** 
 
 - Avatar Masks 的具体设置不是很理解
 - You want to use the built-in Humanoid features, such as arm and leg IK or target matching. 谁使用内置人形功能？人形功能是什么样的功能？
@@ -1281,7 +1281,7 @@ public class VaultTargetMatching : MonoBehaviour
   > Animate Physics : FixedUpdate() -> OnAnimatorMove() -> Internal Update(物理系统内置更新用于检测碰撞) -> OnAnimatorIK()
 
 --------
-**Question :** 
+**Questions :** 
 
 - Play and PlayInFixedTime 执行时是不是强制需要具有当前状态到某个状态的过渡？
 - CrossFade 不就相当于设置了一个过渡？
