@@ -283,11 +283,11 @@
   >
   > `U3D Document : In each frame, the Animator Controller checks a list of Transitions to see whether any of them should start. It checks them in order, starting with all the Transitions from the Any State node and then all the Transitions from the current State. `
   >
-  > Animator Controller 每一帧均会检查该 Transitions List，检查该列表下的所有过渡是否应该发生，此过渡源为 Any State，终点为 Current State
+  > Animator Controller 每一帧均会检查该 Transitions List，检查该列表下的所有过渡是否应该发生，先检查源为 Any State 的过渡，然后是源为 Current State 的过渡
   >
   > `注意:`
   >
-  > 1. Any State 下的过渡时逐帧检查的，使用时需要注意该条件
+  > 1. Any State 下的过渡是逐帧检查的，使用时需要注意该条件
 
 ### State Machines / 状态机
 
@@ -365,17 +365,17 @@
   >
   > `U3D Document : The weight of the previous Animator Layers is equal to the inverse of the overriding (next) Animator Layer.`
   >
-  > 当前动画层权重与之前混合动画结果权重的关系与相反，即相加为1
+  > 当前动画层权重与之前混合动画结果权重的关系 : 相加为1
 
 - Additive Blending / 附加
 
   > `U3D Document : This is used to support additive animation. Additive animation is when the animation itself is stored as a delta (or change) from a reference pose.`
   >
-  > 附加动画将以相对与参考姿势的增量形式存储
+  > 附加动画将以相对于参考姿势的增量形式存储
   >
   > `U3D Document : When you use Additive blending, the already evaluated Animator Layers always have an effective weight of 1. Any animation from the Additive Animator Layer is added to the contribution from those Layers. The animation data is taken as a delta (or change) between a default value and its current value to calculate the weighted contribution. `
   >
-  > 当使用附加绑定类型时，以评估的混合结果将始终具有1的权重，而任何来自 Additive Layer 层的动画数据将以增量形式存储并附加于之前的混合动画中
+  > 当使用附加绑定类型时，已评估的混合结果将始终具有1的权重，而任何来自 Additive Layer 层的动画数据将以增量形式存储并附加于之前的混合动画中
   >
   > `注意:`
   >
@@ -385,17 +385,17 @@
 
 - Sync / 同步
 
-> `U3D Document : This will create an identical State Machine to the one on the source Animator Layer. `
->
-> 同步将创建一个与源动画层完全相同的状态机
->
-> `U3D Document : By default, the State Machine will match the timing of the source State Machine. This means that when Transitions happen in the source Animator Layer, they will also happen in the synced Animator Layer. `
->
-> 默认情况下，同步层与原动画层的状态机时间将匹配，即状态机管理下的过渡发生时机将相同
->
-> `U3D Document : However, if Timing is enabled, State durations will be an interpolation of the source Animator Layer’s Animation Clip length and the synced Animator Layer’s Animation Clip length. They will be based on the weight of the synced Animator Layer. `
->
-> 若选中 Timing，则状态的持续时间将不再与原动画层状态相同，而是根据同步层的权重，对源动画层切片持续时间与同步层切片持续时间进行插值，使用此插值作为同步层切片持续时间
+  > `U3D Document : This will create an identical State Machine to the one on the source Animator Layer. `
+  >
+  > 同步将创建一个与源动画层完全相同的状态机
+  >
+  > `U3D Document : By default, the State Machine will match the timing of the source State Machine. This means that when Transitions happen in the source Animator Layer, they will also happen in the synced Animator Layer. `
+  >
+  > 默认情况下，同步层与原动画层的状态机时间将匹配，即状态机管理下的过渡发生时机将相同
+  >
+  > `U3D Document : However, if Timing is enabled, State durations will be an interpolation of the source Animator Layer’s Animation Clip length and the synced Animator Layer’s Animation Clip length. They will be based on the weight of the synced Animator Layer. `
+  >
+  > 若选中 Timing，则状态的持续时间将不再与原动画层状态相同，而是根据同步层的权重，对源动画层切片持续时间与同步层切片持续时间进行插值，使用此插值作为同步层切片持续时间
 
 - IK Pass
 
@@ -413,8 +413,8 @@
 
 - ~~动画切片的组成 - 绑定是什么概念？一对一绑定是什么东西？~~
 - Multiple Transitions / 多重过渡 时所有条件均满足？还是满足其一？
-- 多个过渡条件时全部满足时才发生过渡？
--  Current Transition 是用来指定中断过渡的源的？
+- ~~多个过渡条件时全部满足时才发生过渡？~~
+-  ~~Current Transition 是用来指定中断过渡的源的？~~
 - 状态机之间的过渡，是如何混合的？？
 
 --------
@@ -519,7 +519,7 @@
 
   > `The Animation Compression setting refers to how the animation’s size, both on disk and in memory, can be reduced by making approximations from the original imported file. `
   >
-  > 该设置可以选择 对原始动画的近似方式 来减少动画数据在内存以硬盘中所占的大小
+  > 该设置可以选择 对原始动画的近似方式 来减少动画数据在内存以及硬盘中所占的大小
   >
   > 1. off / 不压缩
   > 2. Keyframe Reduction / 减少关键帧
@@ -655,9 +655,9 @@
 **Questions:** 
 
 - simulation data 仿真是个什么样的动画数据？
-- rather than just moving in absolute terms 什么意思？
-- Root Motion / 根运动
-- Curves / 曲线 曲线的名称和某控制器参数要相同？为什么要相同，是因为这个曲线控制的就是该参数嘛？
+- ~~rather than just moving in absolute terms 什么意思？~~
+- ~~Root Motion / 根运动~~
+- ~~Curves / 曲线 曲线的名称和某控制器参数要相同？为什么要相同，是因为这个曲线控制的就是该参数嘛？~~
 
 -------
 
@@ -896,8 +896,8 @@ At runtime : Muscle Clip → Humanoid Avatar → set Transform properties
   > 剔除模式控制为效率而暂停动画的方式
   >
   > 1. Always Animate 不剔除
-  > 2. Cull Update Transforms 只要 Animator 下的渲染器边界位于渲染器之外，则停止该Animator的动画，但是仍保留根运动
-  > 3. Cull Completely 只要 Animator 下的渲染器边界位于渲染器之外，则停止该Animator的动画以及根运动
+  > 2. Cull Update Transforms 只要 Animator 下的渲染器边界位于摄像机视椎体之外，则停止该Animator的动画，但是仍保留根运动
+  > 3. Cull Completely 只要 Animator 下的渲染器边界位于摄像机视椎体之外，则停止该Animator的动画以及根运动
 
 ##  Animator State Settings / 状态设置
 
@@ -969,9 +969,9 @@ At runtime : Muscle Clip → Humanoid Avatar → set Transform properties
 
 **Questions :** 
 
-- Avatar Masks 的具体设置不是很理解
+- ~~Avatar Masks 的具体设置不是很理解~~
+- ~~Normalised Range 与 Transform rotations 的转换~~
 - You want to use the built-in Humanoid features, such as arm and leg IK or target matching. 谁使用内置人形功能？人形功能是什么样的功能？
-- Normalised Range 与 Transform rotations 的转换
 - Controlling state properties 参数的用途2，3
 - Unscaled Time 更新模式 没概念
 - Layer / 动画层 动画层的混合权重应用 没概念
@@ -1196,14 +1196,14 @@ public class FlowControlExample : MonoBehaviour
 
 - Effector Information / 效应器信息
 
-  > **AvatarTarget**
-  >
+  **AvatarTarget**
+
   > `U3D Document : The first of the effector information parameters is an enumeration to determine which body part is the effector. `
   >
   > AvatarTarget 用来定义 Humaniod Avatar 哪一个身体部位用作效应器进行匹配，为枚举类型(Root，Body，LeftFoot，RightFoot，LeftHand，RightHand)
-  >
-  > **MatchTargetWeightMask**
-  >
+
+  **MatchTargetWeightMask**
+
   > `U3D Document : The second of the effector information parameters is a struct called MatchTargetWeightMask. It determines what balance of the original position and the target position the effector should take. `
   >
   > MatchTargetWeightMask 为一种结构体，定义了原始位置与目标位置应该采取的平衡，其构造函数需要具有两个参数
