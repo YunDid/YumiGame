@@ -297,7 +297,7 @@
 >
 > `U3D Document : Each Animator Controller has one or more Animator Layers (or Layers), and each Animator Layer contains a State Machine. However, any State Machine may also have additional State Machines nested within it. `
 >
-> 每个 Animator Controller 将由一个或多个 Layers，而每个动画层将包含一个状态机，状态机还可以有附加的子状态机
+> 每个 Animator Controller 将有一个或多个 Layers，而每个动画层将包含一个状态机，状态机还可以有附加的子状态机
 
 #### State Machine Transitions / 状态机过渡
 
