@@ -553,6 +553,10 @@ public class Player
 
   > public returnType FuncName\<T> () {}
 
+- Generics  Interface
+
+  > public interface InterfaceName\<T> {}
+
 - Generic Constraint / 泛型约束
 
   > 区别于c++，c++仅仅起暗示作用并不会实际约束，而c#会对期望的类型作出约束
@@ -560,6 +564,8 @@ public class Player
   public class ClassName\<T> where T : ConstraintList {}
   
   public returnType FuncName\<T> ()  where T : ConstraintList {}
+  
+  public interface InterfaceName\<T>  where T : ConstraintList {}
   
   ConstraintList / 约束列表 : 
   
@@ -963,7 +969,7 @@ public class Delegates : MonoBehaviour
 >
 > 设置相应的事件通知函数，完成对事件的调用，进而完成通知
 >
-> 作出改用时完成事件通知函数的调用
+> 作出改动时完成事件通知函数的调用
 >
 > `注意:`
 >

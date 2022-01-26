@@ -295,7 +295,7 @@ public class WreckOnCollision : MonoBehaviour
 > 1. after the Update and FixedUpdate functions have been called. 在Update()和FixedUpdate()被调用之后，作出额外的操作
 > 2. after all animations have been calculated. 在所有动画计算完毕之后作出额外的操作
 >
-> 例如相机需要实时朝向目标对象，但是相机方向的调整必须在目标对象位置作出变动之后update()之后，再进行调整，也就是说相机必须实时朝向目标对象改动后的位置
+> 例如相机需要实时朝向目标对象，但是相机方向的调整必须在目标对象位置作出变动之后，即update()之后，再进行调整，也就是说相机必须实时朝向目标对象改动后的位置
 
 ### Initialization Events
 
@@ -406,6 +406,8 @@ public class WreckOnCollision : MonoBehaviour
 # Unity3D Animation / 动画
 
 > `U3D Document :Unity’s Animation features include retargetable animations, full control of animation weights at runtime, event calling from within the animation playback, sophisticated state machine hierarchies and transitions, blend shapes for facial animations, and much more.`
+>
+> 动画系统包括 动画重定向，运行时动画权重的控制，动画播放时事件的回调，复杂状态机管理下的动画与过渡，混合树等
 
 ## Animation Workflow / 动画流程
 
@@ -569,7 +571,9 @@ public class WreckOnCollision : MonoBehaviour
 
 > `U3D Document : This allows you to have multiple layers of animation within a single animation controller working at the same time, each controlled by a separate state machine. A common use of this is to have a separate layer playing upper-body animations over a base layer that controls the general movement animations for a character.`
 >
-> at the same time ，a single animation controller，multiple layers of animation，在一个controller下，同一时刻可以有多种动画同时播放，每个动画分别由独立的状态机控制，例如为了使人物移动更自然，在整体move的base动画层播放时，仍可添加一个上身动画层同时播放以时该动作更自然
+> 关键词 : at the same time ，a single animation controller，multiple layers of animation
+>
+> 在一个controller下，同一时刻可以有多种动画同时播放，每个动画分别由独立的状态机控制，例如为了使人物移动更自然，在整体move的base动画层播放时，仍可添加一个上身动画层同时播放以时该动作更自然
 >
 > `U3D Document : Unity uses Animation Layers for managing complex state machines for different body parts. `
 >
@@ -595,7 +599,24 @@ public class WreckOnCollision : MonoBehaviour
 
 ### Parameters / 动画参数
 
-> 这东西到底是干啥的？？？
+> `U3D Document : Examples of what the Parameter data can be used for include: `
+> `1. Defining Transition conditions`
+> `2. Controlling state properties`
+> `3. Controlling Blend Trees`
+>
+> 动画参数可以用于定义转换条件，控制状态的属性，控制混合树
+
+- Floats
+
+- Integers
+
+- Booleans
+
+- Triggers / 触发器类型
+
+  > `U3D Document : Trigger Parameters are exclusively used to start Transitions. `
+  >
+  > 触发器参数专门用于启动某种过渡
 
 ### Animation State Machines / 动画状态机
 
