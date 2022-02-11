@@ -23,7 +23,7 @@
 
 
 
-![image-20220210105722924](C:\Users\Yundid\AppData\Roaming\Typora\typora-user-images\image-20220210105722924.png)
+![image-20220210105722924](Images/image-20220210105722924.png)
 
 ## Gating Network / 门控网络
 
