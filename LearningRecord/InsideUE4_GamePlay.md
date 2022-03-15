@@ -609,7 +609,7 @@ UGameViewportClient* ViewportClient;
 > Ue 中一个网络连接也是一个 Player，可提供输入信号的都可以当做 Player.
 
 ```
-x Class UNetConnection -> UPlayer -> UObject
+Class UNetConnection -> UPlayer -> UObject
 ```
 
 **Questions : **
@@ -631,8 +631,8 @@ x Class UNetConnection -> UPlayer -> UObject
 
 ## MVC in Ue_GamePlay
 
-![MVC_GamePlay](Images\MVC_GamePlay.jpg)
+![MVC_GamePlay](Images/MVC_GamePlay.jpg)
 
 ## Necessary Class in Ue_GamePlay
 
-![Detailes](Images\Detailes.jpg)
+![Detailes](Images/Detailes.jpg)
