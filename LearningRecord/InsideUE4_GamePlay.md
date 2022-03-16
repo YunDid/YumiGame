@@ -18,8 +18,6 @@ Class Default Object
 -------------
 ```
 
-
-
 # Component / 组件
 
 > Ue 借鉴 Unity 的组件式构建对象的方法，通过 UActorComponent 的派生类来组装 Actor 的各项功能.
